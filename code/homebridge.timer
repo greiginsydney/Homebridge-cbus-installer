@@ -1,1 +1,9 @@
+[Unit]
+Description=Delay
 
+[Timer]
+OnBootSec=60
+
+
+[Install]
+WantedBy=multi-user.target
