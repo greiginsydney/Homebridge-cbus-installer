@@ -90,14 +90,35 @@ sudo chmod +x setup.sh
 sudo -E -H ./setup.sh step1
 ```
 
-> If any step fails, the script will abort and on-screen info should reveal the component that failed. You can simply re-run the script at any time (up-arrow / return) and it will simply skip over those steps where no changes are required. There are a lot of moving parts in the Raspbian/Linux world, and sometimes a required server might be down or overloaded. Time-outs aren't uncommon, hence why simply wait and retry is a valid remediation action.
+> If any of the script's steps fail, the script will abort and on-screen info should reveal the component that failed. You can simply re-run the script at any time (up-arrow / return) and it will simply skip over those steps where no changes are required. There are a lot of moving parts in the Raspbian/Linux world, and sometimes a required server might be down or overloaded. Time-outs aren't uncommon, hence why simply wait and retry is a valid remediation action.
 
-31. If all goes well, you'll be presented with a prompt to reboot:
+31. Having installed C-Gate, we now need to edit one of the security files to ensure authorised remote machines - like the one you'll run Toolkit from - are allowed to connect.
+
+32. The script prompts the user, autofilling a guess at your local network, based upon the IP address of the Pi. Backspace if you want to edit this, or just press return if the value is correct and you want to whitelist that whole network:
+
 ```txt
-Exited step 1 OK.
+=======================================
+C-Gate won't let remote clients connect to it if they're not in the file
+/usr/local/bin/cgate/config/access.txt.
+Add your Admin machine's IP address here, or to whitelist an entire network
+add it with '255' as the last octet. e.g.:
+192.168.1.7 whitelists just the one machine, whereas
+192.168.1.255 whitelists the whole 192.168.1.x network.
+The more IPs you whitelist, the less secure C-Gate becomes.
+
+Enter an IP or network address to allow/whitelist : 10.10.16.255
+```
+
+33. If all goes well, you'll be presented with a prompt to reboot:
+```txt
+>> Exited step 1 OK. A reboot is required to kick-start C-Gate and prepare for Step 2.
 Reboot now? [Y/n]:
 ```
 Pressing return or anything but n/N will cause the Pi to reboot.
+
+34. While you wait for the Pi to reboot, copy the tagsfile ("something.xml") from your existing C-Bus setup to /home/pi/. On a default Windows installation of C-Gate/Toolkit the file will be in C:\Clipsal\C-Gate2\tag\. (I use [WinSCP](https://winscp.net/eng/download.php) for this.)
+
+> Make sure the filename is the name of your network, because the script uses the filename to populate several places in the config where C-Gate and Homebridge need to know the network name.
 
 32. After the Pi has rebooted, sign back in again and resume. The next step is to re-run the script, but with a new switch:
 ```txt
