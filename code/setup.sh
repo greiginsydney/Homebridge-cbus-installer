@@ -48,7 +48,6 @@ step1 ()
 	mv cgate /usr/local/bin
 	echo ""
 	echo ">> Set CGate to start as a service using systemd"
-	cd  ${HOME}
 	[ -f cgate.service ] && mv -fv cgate.service /etc/systemd/system/
 	systemctl enable cgate.service
 	systemctl start cgate.service
