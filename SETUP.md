@@ -57,7 +57,7 @@ pi@192.168.1.10's password:
 23. Enter the password and press Return.
 24. It's STRONGLY recommended that you change the password. Run `passwd` and follow your nose.
 
-## Here's where all the software modules are installed. This might take a while:
+## Here's where all the software is updated and installed. This might take a while:
 
 25. First let's make sure the Pi is all up-to-date:
 ```txt
@@ -127,7 +127,7 @@ sudo -E ./setup.sh step2
 
 36. The script will now move some of the supporting files from the repo to their final homes, and edit some of the default config in the Pi. 
 
-It will output its progress to the screen:
+It will output its progress to the screen. You'll see it's gone with "19P" which is my network name:
 ```txt
 pi@raspberrypi:~ $ sudo -E ./setup.sh step2
 >> Assuming project name = 19P, and setting C-Gate project.start & project.default values accordingly.
@@ -150,7 +150,7 @@ Pressing return or anything but n/N will cause the Pi to reboot.
 sudo journalctl -u homebridge.service -f
 ```
 
-You should see an output like this for every unit:
+You should see an output like this for every unit. All those "19P" references will change in your setup to be whatever your network name is:
 ```txt
 Dec 27 15:10:15 homebridge homebridge[504]: 2019-12-27T04:10:15.425Z cbus:client rx event { time: '20191227-151015', code: 753, processed: false, message: '//19P/254 87303760-0a8c-1038-9483-ee3a5c1da2ab Net Sync: synchronizing unit 5 of 23 at address 6', type: 'event', raw: '#e# 20191227-151015 753 //19P/254 87303760-0a8c-1038-9483-ee3a5c1da2ab Net Sync: synchronizing unit 5 of 23 at address 6' }
 ```
