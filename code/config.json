@@ -19,7 +19,7 @@
       "client_application": 56,
       "client_debug": true,
 
-      "platform_export": "my-platform.json",
+      "platform_export": "/home/pi/my-platform.json",
             
       "accessories": [ ]
     }
