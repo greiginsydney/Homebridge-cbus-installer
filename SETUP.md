@@ -120,17 +120,40 @@ Pressing return or anything but n/N will cause the Pi to reboot.
 
 > Make sure the filename is the name of your network, because the script uses the filename to populate several places in the config where C-Gate and Homebridge need to know the network name.
 
-32. After the Pi has rebooted, sign back in again and resume. The next step is to re-run the script, but with a new switch:
+35. After the Pi has rebooted, sign back in again and resume. The next step is to re-run the script, but with a new switch:
 ```txt
 sudo -E ./setup.sh step2
 ```
 
-33. The script will now move some of the supporting files from the repo to their final homes, and edit some of the default config in the Pi. 
+36. The script will now move some of the supporting files from the repo to their final homes, and edit some of the default config in the Pi. 
 
 It will output its progress to the screen:
 ```txt
 pi@raspberrypi:~ $ sudo -E ./setup.sh step2
-'homebridge.service' -> '/etc/systemd/system/homebridge.service'
-'homebridge.timer' -> '/etc/systemd/system/homebridge.timer'
-'homebridge' -> '/etc/nginx/sites-available/homebridge'
+>> Assuming project name = 19P, and setting C-Gate project.start & project.default values accordingly.
+renamed 'homebridge' -> '/etc/default/homebridge'
+renamed 'homebridge.service' -> '/etc/systemd/system/homebridge.service'
+renamed 'homebridge.timer' -> '/etc/systemd/system/homebridge.timer'
+mkdir: created directory '/var/lib/homebridge'
+renamed 'config.json' -> '/var/lib/homebridge/config.json'
+Created symlink /etc/systemd/system/multi-user.target.wants/homebridge.timer → /etc/systemd/system/homebridge.timer.
+>> Exited step 2 OK.
+
+Reboot now? [Y/n]:
 ```
+Pressing return or anything but n/N will cause the Pi to reboot.
+
+37. Once the Pi reboots, C-Gate and homebridge will come up. It's this stage that populates your "my-platform.json" file, and this is likely to take a few minutes.
+
+38. If you're the curious type, sign back in and enable logging. Hopefully it will output a lot of messages as homebridge discovers all the units on your network:
+```txt
+sudo journalctl -u homebridge.service -f
+```
+
+You should see an output like this for every unit:
+```txt
+Dec 27 15:10:15 homebridge homebridge[504]: 2019-12-27T04:10:15.425Z cbus:client rx event { time: '20191227-151015', code: 753, processed: false, message: '//19P/254 87303760-0a8c-1038-9483-ee3a5c1da2ab Net Sync: synchronizing unit 5 of 23 at address 6', type: 'event', raw: '#e# 20191227-151015 753 //19P/254 87303760-0a8c-1038-9483-ee3a5c1da2ab Net Sync: synchronizing unit 5 of 23 at address 6' }
+```
+(Control-C to abort this once you've seen enough or it stops).
+
+39. 
