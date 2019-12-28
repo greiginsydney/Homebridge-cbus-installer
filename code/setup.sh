@@ -108,8 +108,69 @@ step2 ()
 		echo ""
 		exit
 	fi
-	
 	echo ">> Exited step 2 OK."
+}
+
+
+copy_groups ()
+{
+
+	# https://stackoverflow.com/questions/24998434/read-command-display-the-prompt-in-color-or-enable-interpretation-of-backslas
+	RESET="\033[0m"
+	YELLOW="\033[38;5;11m"
+	# This matches the format of the DISABLED accessories:
+	matchRegex="^\S+(.*)(,\ \"enabled\":\ false.*)$"
+	# Read a line from the file:
+	# Thank you SO: https://stackoverflow.com/questions/6911520/read-command-in-bash-script-is-being-skipped
+	while read line <&9; do
+		if [[ $line =~ $matchRegex ]] ;
+		then
+			thisGroup=${BASH_REMATCH[1]}
+			echo ""
+			echo ${BASH_REMATCH[1]}
+			matchUnknown="\"type\":\ \"unknown\"(.+)"
+			if [[ $thisGroup =~ $matchUnknown ]];
+			then
+				read -e -i "C" -p "$(echo -e "[e]nable, [s]kip, "$YELLOW"[C]hange & enable"$RESET", [q]uit? ")" choice
+			else
+				read -e -i "E" -p "[E]nable, [s]kip, [c]hange & enable, [q]uit? "  choice
+			fi
+			case $choice in
+				(e|E)
+					echo "Enabled"
+					;;
+				(s|S)
+					continue #Jump to next Group
+					echo "Skipped"
+					;;
+				(c|C)
+					echo "They responded C - more to do here"
+					;;
+				(q|Q)
+					break #We're outta here
+					;;
+			esac
+			#Capture the line number of the last group:
+			lastLine=$(sed -n -E '/^\s*\{.+\}$/=' /var/lib/homebridge/config.json)
+			if [ ! -z "$lastLine" ];
+			then
+				# Add a trailing comma to what's *currently* the last group:
+				sed -i -E "$lastLine s/^(\s*\{.+\}$)/\1,/"g /var/lib/homebridge/config.json
+				((lastLine+=1)) #Move the index to the line after, where we'll insert a new one
+				sed -i "$lastLine i\        {$thisGroup }" /var/lib/homebridge/config.json
+				echo $formatted
+			else
+				echo ">> JSON error. config.json has no final assessory without a comma after it"
+				echo ">> Please manually edit config.json and restart"
+				echo ""
+				break
+			fi
+		#else
+		#	echo "Nope"
+		fi
+	done 9</home/pi/my-platform.json
+	echo "Done"
+
 }
 
 
@@ -159,6 +220,9 @@ case "$1" in
 	("step2")
 		step2
 		prompt_for_reboot
+		;;
+	("copy")
+		copy_groups
 		;;
 	("test")
 		test_install
