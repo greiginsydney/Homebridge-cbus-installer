@@ -114,10 +114,11 @@ step2 ()
 
 copy_groups ()
 {
-
 	# https://stackoverflow.com/questions/24998434/read-command-display-the-prompt-in-color-or-enable-interpretation-of-backslas
-	RESET="\033[0m"
+	# See "88/256 Colors": https://misc.flogisoft.com/bash/tip_colors_and_formatting
+	GREEN="\033[38;5;10m"
 	YELLOW="\033[38;5;11m"
+	RESET="\033[0m"
 	# This matches the format of the DISABLED accessories:
 	matchRegex="^\S+(.*)(,\ \"enabled\":\ false.*)$"
 	# Read a line from the file:
@@ -139,10 +140,10 @@ copy_groups ()
 			if [[ $thisGroup =~ $matchUnknown ]];
 			then
 				defaultChoice="c"
-				read -p "$(echo -e "[e]nable, [s]kip, "$YELLOW"[C]hange & enable"$RESET", [q]uit? ")" -n1 choice
+				read -p "$(echo -e "[e]nable, [s]kip, "$YELLOW"[C]hange & enable"$RESET", [q]uit? ")" choice
 			else
 				defaultChoice="e"
-				read -p "[E]nable, [s]kip, [c]hange & enable, [q]uit? " -n1 choice
+				read -p "$(echo -e ""$GREEN"[E]nable"$RESET", [s]kip, [C]hange & enable, [q]uit? ")" choice
 			fi
 			# Stuff in the appropriate default value if the user responded null:
 			if [ -z "$choice" ];
@@ -166,9 +167,10 @@ copy_groups ()
 					;;
 				(c|C)
 					echo "Change to:"
+					unset newType
 					while [ -z $newType ];
 					do
-						read -p "[l]ight, s[w]itch, [d]immer, [s]hutter, [m]otion, s[e]curity, [t]rigger, [c]ontact: " -n1 newType
+						read -p "[l]ight, s[w]itch, [d]immer, [s]hutter, [m]otion, s[e]curity, [t]rigger, [c]ontact: " newType
 						case $newType in 
 							(l|L) replaceValue="light" ;;
 							(w|W) replaceValue="switch" ;;
@@ -224,7 +226,7 @@ copy_groups ()
 
 restart_homebridge ()
 {
-	read -p "Restart Homebridge? [Y/n]: " -n1 restartResponse
+	read -p "Restart Homebridge? [Y/n]: " restartResponse
 	case $restartResponse in
 		(y|Y|"")
 			systemctl restart homebridge
@@ -245,7 +247,7 @@ test_install ()
 prompt_for_reboot()
 {
 	echo ""
-	read -p "Reboot now? [Y/n]: " -n1 rebootResponse
+	read -p "Reboot now? [Y/n]: " rebootResponse
 	case $rebootResponse in
 		(y|Y|"")
 			echo "Bye!"
