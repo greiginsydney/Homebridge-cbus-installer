@@ -220,11 +220,11 @@ copy_groups ()
 		fi
 	done 9</home/pi/my-platform.json
 	echo "Done"
-	matchRegex="^\S+\"pin\":\ \"([0-9]+-[0-9]+-[0-9])\"$"
+	matchRegex="^\S*\"pin\":\ \"(.+)\"$"
 	while read line; do
-		if [[ $line =~ $matchRegex ]] ;
+		if [[ $line =~ $matchRegex ]];
 		then
-			thePin=${BASH_REMATCH[0]}
+			thePin=${BASH_REMATCH[1]}
 			break
 		fi
 	done </var/lib/homebridge/config.json
