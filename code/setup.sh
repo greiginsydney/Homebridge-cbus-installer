@@ -122,29 +122,66 @@ copy_groups ()
 	matchRegex="^\S+(.*)(,\ \"enabled\":\ false.*)$"
 	# Read a line from the file:
 	# Thank you SO: https://stackoverflow.com/questions/6911520/read-command-in-bash-script-is-being-skipped
+	#defaultChoice=""
 	while read line <&9; do
 		if [[ $line =~ $matchRegex ]] ;
 		then
 			thisGroup=${BASH_REMATCH[1]}
 			echo ""
 			echo ${BASH_REMATCH[1]}
+			#Skip if it's already in the file:
+			if grep -Fq "$thisGroup" /var/lib/homebridge/config.json;
+			then
+				echo 'Skipped: already in config.json'
+				continue
+			fi
 			matchUnknown="\"type\":\ \"unknown\"(.+)"
 			if [[ $thisGroup =~ $matchUnknown ]];
 			then
-				read -e -i "C" -p "$(echo -e "[e]nable, [s]kip, "$YELLOW"[C]hange & enable"$RESET", [q]uit? ")" choice
+				defaultChoice="c"
+				read -p "$(echo -e "[e]nable, [s]kip, "$YELLOW"[C]hange & enable"$RESET", [q]uit? ")" choice
 			else
-				read -e -i "E" -p "[E]nable, [s]kip, [c]hange & enable, [q]uit? "  choice
+				defaultChoice="e"
+				read -p "[E]nable, [s]kip, [c]hange & enable, [q]uit? "  choice
+			fi
+			# Stuff in the appropriate default value if the user responded null:
+			if [ -z "$choice" ];
+			then
+				case $defaultChoice in
+					(e)
+						choice="e"
+						;;
+					(c)
+						choice="c"
+						;;
+				esac
 			fi
 			case $choice in
 				(e|E)
 					echo "Enabled"
 					;;
 				(s|S)
-					continue #Jump to next Group
 					echo "Skipped"
+					continue #Jump to next Group
 					;;
 				(c|C)
-					echo "They responded C - more to do here"
+					echo "Change to:"
+					while [ -z $newType ];
+					do
+						read -p "[l]ight, s[w]itch, [d]immer, [s]hutter, [m]otion, s[e]curity, [t]rigger, [c]ontact: " newType
+						case $newType in 
+							(l|L) replaceValue="light" ;;
+							(w|W) replaceValue="switch" ;;
+							(d|D) replaceValue="dimmer";;
+							(s|S) replaceValue="shutter";;
+							(m|M) replaceValue="motion";;
+							(e|E) replaceValue="security";;
+							(t|T) replaceValue="trigger";;
+							(c|C) replaceValue="contact";;
+						esac
+					done
+					echo "Changed to $replaceValue"
+					thisGroup="${thisGroup/unknown/$replaceValue}"
 					;;
 				(q|Q)
 					break #We're outta here
@@ -165,12 +202,23 @@ copy_groups ()
 				echo ""
 				break
 			fi
-		#else
-		#	echo "Nope"
 		fi
 	done 9</home/pi/my-platform.json
 	echo "Done"
+}
 
+
+restart_homebridge ()
+{
+	read -p "Restart Homebridge? [Y/n]: " restartResponse
+	case $restartResponse in
+		(y|Y|"")
+			systemctl restart homebridge
+			;;
+		(*)
+			return
+			;;
+	esac
 }
 
 
@@ -223,6 +271,7 @@ case "$1" in
 		;;
 	("copy")
 		copy_groups
+		restart_homebridge
 		;;
 	("test")
 		test_install
