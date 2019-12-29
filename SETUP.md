@@ -203,4 +203,6 @@ Restart Homebridge? [Y/n]:
 
 45. Pressing return or anything but n/N will restart Homebridge to pick up the new settings.
 
+![setup.sh-copy.png](/images/setup.sh-copy.png)
+
 46. You're free to repeat step 40 at any time. You won't be prompted for any of the GAs you added before, so if you want to change the "type" of an existing GA you'll need to do this by hand (`sudo nano /var/lib/homebridge/config.json`). Any GAs that you've recently added to the network or you may have subsequently decided to inclide can now be added to config.json just by responding to the prompts.
