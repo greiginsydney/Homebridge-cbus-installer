@@ -156,4 +156,51 @@ Dec 27 15:10:15 homebridge homebridge[504]: 2019-12-27T04:10:15.425Z cbus:client
 ```
 (Control-C to abort this once you've seen enough or it stops).
 
-39. 
+## Tweak the config
+
+39. At this point you have an almost working Homebridge setup, but some tweaking and fine-tuning is required.
+
+A file called "my-platform.json" has been created in /home/pi and it contains the details of all the Group Addresses ('GAs') that were reported by C-Gate. The type of device has been _guessed_ by Homebridge-cbus, and some of these will need correcting.
+
+Review the ["Functional example config.json" file](https://github.com/anthonywebb/homebridge-cbus#functional-example-configjson), and compare that with both yours (/var/lib/homebridge/config.json) and your "my-platform.json".
+
+If you have a small C-Bus network and there aren't a lot of GAs, it's a simple matter to copy and paste from one text file to another, but if your network's larger or more complicated, the script can do this for you.
+
+40. To use the script, re-run it with the new switch:
+```txt
+sudo -E ./setup.sh copy
+```
+
+41. The script will now read through all the GAs in my-platform.json, and if they don't exist in config.json, prompt you one-by-one to Add them, Skip them, and where the "type" of channel is reported as unknown or was guessed incorrectly, Change them to one of the possible types.
+
+42. Where the Group's details are correct, pressing Return will accept the default, which is highlighted in green:
+```txt
+"type": "dimmer", "id": 18, "name": "Lounge room"
+[A]dd, [s]kip, [C]hange & enable, [q]uit?
+Added
+```
+
+43. All that are reported as "unknown" are highlighted in yellow, and pressing Return defaults to the Change sub-menu:
+```txt
+"type": "unknown", "id": 21, "name": "Exhaust fan"
+[a]dd, [s]kip, [C]hange & enable, [q]uit?
+Change to:
+[l]ight, s[w]itch, [d]immer, [s]hutter, [m]otion, s[e]curity, [t]rigger, [c]ontact: w
+Changed to switch
+```
+
+44. Press "s" and return to Skip any spare, unknown or unwanted GAs, and then "q" once you're done:
+```txt
+"type": "light", "id": 22, "name": "Ceiling GPO"
+[A]dd, [s]kip, [C]hange & enable, [q]uit? s
+Skipped
+
+"type": "unknown", "id": 23, "name": "Group 23"
+[a]dd, [s]kip, [C]hange & enable, [q]uit? q
+Done
+Restart Homebridge? [Y/n]:
+```
+
+45. Pressing return or anything but n/N will restart Homebridge to pick up the new settings.
+
+46. You're free to repeat step 40 at any time. You won't be prompted for any of the GAs you added before, so if you want to change the "type" of an existing GA you'll need to do this by hand (`sudo nano /var/lib/homebridge/config.json`). Any GAs that you've recently added to the network or you may have subsequently decided to inclide can now be added to config.json just by responding to the prompts.
