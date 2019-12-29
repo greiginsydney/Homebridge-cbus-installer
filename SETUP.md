@@ -114,7 +114,7 @@ Enter an IP or network address to allow/whitelist : 10.10.16.255
 >> Exited step 1 OK. A reboot is required to kick-start C-Gate and prepare for Step 2.
 Reboot now? [Y/n]:
 ```
-Pressing return or anything but n/N will cause the Pi to reboot.
+Pressing return or anything but Y/y will cause the Pi to reboot.
 
 34. While you wait for the Pi to reboot, copy the tagsfile ("something.xml") from your existing C-Bus setup to /home/pi/. On a default Windows installation of C-Gate/Toolkit the file will be in C:\Clipsal\C-Gate2\tag\. (I use [WinSCP](https://winscp.net/eng/download.php) for this.)
 
@@ -141,7 +141,7 @@ Created symlink /etc/systemd/system/multi-user.target.wants/homebridge.timer →
 
 Reboot now? [Y/n]:
 ```
-Pressing return or anything but n/N will cause the Pi to reboot.
+Pressing return or anything but Y/y will cause the Pi to reboot.
 
 37. Once the Pi reboots, C-Gate and homebridge will come up. It's this stage that populates your "my-platform.json" file, and this is likely to take a few minutes.
 
@@ -160,27 +160,37 @@ Dec 27 15:10:15 homebridge homebridge[504]: 2019-12-27T04:10:15.425Z cbus:client
 
 39. At this point you have an almost working Homebridge setup, but some tweaking and fine-tuning is required.
 
-A file called "my-platform.json" has been created in /home/pi and it contains the details of all the Group Addresses ('GAs') that were reported by C-Gate. The type of device has been _guessed_ by Homebridge-cbus, and some of these will need correcting.
+40. "Step 2" created an empty file called "my-platform.json" in /home/pi, and following the reboot in Step 36 it will be populated with  the details of all the Group Addresses ('GAs') that were reported by C-Gate. The type of device has been _guessed_ by Homebridge-cbus, and some of these will need correcting.
 
 Review the ["Functional example config.json" file](https://github.com/anthonywebb/homebridge-cbus#functional-example-configjson), and compare that with both yours (/var/lib/homebridge/config.json) and your "my-platform.json".
 
 If you have a small C-Bus network and there aren't a lot of GAs, it's a simple matter to copy and paste from one text file to another, but if your network's larger or more complicated, the script can do this for you.
 
-40. To use the script, re-run it with the new switch:
+41. To use the script, re-run it with the new 'copy' switch:
 ```txt
 sudo -E ./setup.sh copy
 ```
 
-41. The script will now read through all the GAs in my-platform.json, and if they don't exist in config.json, prompt you one-by-one to Add them, Skip them, and where the "type" of channel is reported as unknown or was guessed incorrectly, Change them to one of the possible types.
+42. If the script exits with "Done" immediately, the mostly likely reason is that you've not given homebridge enough time to populate the my-platform.json file. Wait a couple of minutes and try again.
+```txt
+sudo -E ./setup.sh copy
+Done
 
-42. Where the Group's details are correct, pressing Return will accept the default, Add, which is highlighted in green:
+The PIN to enter in your iDevice is 031-45-154
+
+Restart Homebridge? [Y/n]:
+```
+
+43. Assuming the file has been populated OK, the script will now read through all the GAs in my-platform.json, and if they don't exist in config.json, prompt you one-by-one to Add them, Skip them, and where the "type" of channel is reported as unknown or was guessed incorrectly, Change them to one of the possible types.
+
+44. Where the Group's details are correct, pressing Return will accept the default, Add, which is highlighted in green:
 ```txt
 "type": "dimmer", "id": 18, "name": "Lounge room"
 [A]dd, [s]kip, [C]hange & enable, [q]uit?
 Added
 ```
 
-43. All that are reported as "unknown" are highlighted in yellow, and pressing Return defaults to show the Change sub-menu. Choose the highlighted letter of the appropriate type and press Return:
+45. All that are reported as "unknown" are highlighted in yellow, and pressing Return defaults to show the Change sub-menu. Choose the highlighted letter of the appropriate type and press Return:
 ```txt
 "type": "unknown", "id": 21, "name": "Exhaust fan"
 [a]dd, [s]kip, [C]hange & enable, [q]uit?
@@ -189,7 +199,7 @@ Change to:
 Changed to switch
 ```
 
-44. Press "s" and return to Skip any spare, unknown or unwanted GAs, and then "q" once you're done:
+46. Press "s" and return to Skip any spare, unknown or unwanted GAs, and then "q" once you're done:
 ```txt
 "type": "light", "id": 22, "name": "Ceiling GPO"
 [A]dd, [s]kip, [C]hange & enable, [q]uit? s
@@ -198,11 +208,23 @@ Skipped
 "type": "unknown", "id": 23, "name": "Group 23"
 [a]dd, [s]kip, [C]hange & enable, [q]uit? q
 Done
+
+The PIN to enter in your iDevice is 031-45-154
+
 Restart Homebridge? [Y/n]:
 ```
 
-45. Pressing return or anything but n/N will restart Homebridge to pick up the new settings.
+47. Pressing return or anything but Y/y will restart Homebridge to pick up the new settings.
 
 ![setup.sh-copy.png](/images/setup.sh-copy.png)
 
-46. You're free to repeat step 40 at any time. You won't be prompted for any of the GAs you added before, so if you want to change the "type" of an existing GA you'll need to do this by hand (`sudo nano /var/lib/homebridge/config.json`). Any GAs that you've recently added to the network or you may have subsequently decided to inclide can now be added to config.json just by responding to the prompts.
+48. At this point you can turn to your iDevice, launch Home and select "Add Accessory".
+
+49. Click the button "I Don't Have a Code or Cannot Scan", then under the Manual Code heading on the next screen click the "Enter code..." link and enter the PIN shown on-screen at the end of Step 46. You should be able to follow your nose from there.
+
+49. You're free to repeat step 41 at any time. You won't be prompted for any of the GAs you added before, so if you want to change the "type" of an existing GA you'll need to do this by hand (`sudo nano /var/lib/homebridge/config.json`). Any GAs that you've recently added to the network or you may have subsequently decided to include can now be added to config.json just by responding to the prompts.
+
+<br>
+
+\- Greig.
+
