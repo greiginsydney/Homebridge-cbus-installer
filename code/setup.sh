@@ -140,17 +140,17 @@ copy_groups ()
 			if [[ $thisGroup =~ $matchUnknown ]];
 			then
 				defaultChoice="c"
-				read -p "$(echo -e "[e]nable, [s]kip, "$YELLOW"[C]hange & enable"$RESET", [q]uit? ")" choice
+				read -p "$(echo -e "[a]dd, [s]kip, "$YELLOW"[C]hange & enable"$RESET", [q]uit? ")" choice
 			else
-				defaultChoice="e"
-				read -p "$(echo -e ""$GREEN"[E]nable"$RESET", [s]kip, [C]hange & enable, [q]uit? ")" choice
+				defaultChoice="a"
+				read -p "$(echo -e ""$GREEN"[A]dd"$RESET", [s]kip, [C]hange & enable, [q]uit? ")" choice
 			fi
 			# Stuff in the appropriate default value if the user responded null:
 			if [ -z "$choice" ];
 			then
 				case $defaultChoice in
-					(e)
-						choice="e"
+					(a)
+						choice="a"
 						;;
 					(c)
 						choice="c"
@@ -158,8 +158,8 @@ copy_groups ()
 				esac
 			fi
 			case $choice in
-				(e|E)
-					echo "Enabled"
+				(a|A)
+					echo "Added"
 					;;
 				(s|S)
 					echo "Skipped"
@@ -220,6 +220,17 @@ copy_groups ()
 		fi
 	done 9</home/pi/my-platform.json
 	echo "Done"
+	matchRegex="^\S+\"pin\":\ \"([0-9]+-[0-9]+-[0-9])\"$"
+	while read line; do
+		if [[ $line =~ $matchRegex ]] ;
+		then
+			thePin=${BASH_REMATCH[0]}
+			break
+		fi
+	done </var/lib/homebridge/config.json
+	echo ""
+	echo "The PIN to enter in your iDevice is $thePin"
+	echo ""
 }
 
 
