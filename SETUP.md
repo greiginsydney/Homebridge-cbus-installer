@@ -173,14 +173,14 @@ sudo -E ./setup.sh copy
 
 41. The script will now read through all the GAs in my-platform.json, and if they don't exist in config.json, prompt you one-by-one to Add them, Skip them, and where the "type" of channel is reported as unknown or was guessed incorrectly, Change them to one of the possible types.
 
-42. Where the Group's details are correct, pressing Return will accept the default, which is highlighted in green:
+42. Where the Group's details are correct, pressing Return will accept the default, Add, which is highlighted in green:
 ```txt
 "type": "dimmer", "id": 18, "name": "Lounge room"
 [A]dd, [s]kip, [C]hange & enable, [q]uit?
 Added
 ```
 
-43. All that are reported as "unknown" are highlighted in yellow, and pressing Return defaults to the Change sub-menu:
+43. All that are reported as "unknown" are highlighted in yellow, and pressing Return defaults to show the Change sub-menu. Choose the highlighted letter of the appropriate type and press Return:
 ```txt
 "type": "unknown", "id": 21, "name": "Exhaust fan"
 [a]dd, [s]kip, [C]hange & enable, [q]uit?
