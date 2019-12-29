@@ -139,10 +139,10 @@ copy_groups ()
 			if [[ $thisGroup =~ $matchUnknown ]];
 			then
 				defaultChoice="c"
-				read -p "$(echo -e "[e]nable, [s]kip, "$YELLOW"[C]hange & enable"$RESET", [q]uit? ")" choice
+				read -p "$(echo -e "[e]nable, [s]kip, "$YELLOW"[C]hange & enable"$RESET", [q]uit? ")" -n1 choice
 			else
 				defaultChoice="e"
-				read -p "[E]nable, [s]kip, [c]hange & enable, [q]uit? "  choice
+				read -p "[E]nable, [s]kip, [c]hange & enable, [q]uit? " -n1 choice
 			fi
 			# Stuff in the appropriate default value if the user responded null:
 			if [ -z "$choice" ];
@@ -168,7 +168,7 @@ copy_groups ()
 					echo "Change to:"
 					while [ -z $newType ];
 					do
-						read -p "[l]ight, s[w]itch, [d]immer, [s]hutter, [m]otion, s[e]curity, [t]rigger, [c]ontact: " newType
+						read -p "[l]ight, s[w]itch, [d]immer, [s]hutter, [m]otion, s[e]curity, [t]rigger, [c]ontact: " -n1 newType
 						case $newType in 
 							(l|L) replaceValue="light" ;;
 							(w|W) replaceValue="switch" ;;
@@ -187,6 +187,12 @@ copy_groups ()
 					break #We're outta here
 					;;
 			esac
+			#Skip if a changed value (e.g. from "Unknown") is already in the file:
+			if grep -Fq "$thisGroup" /var/lib/homebridge/config.json;
+			then
+				echo 'Skipped: already in config.json'
+				continue
+			fi
 			#Capture the line number of the last group:
 			lastLine=$(sed -n -E '/^\s*\{.+\}$/=' /var/lib/homebridge/config.json)
 			if [ ! -z "$lastLine" ];
@@ -197,10 +203,18 @@ copy_groups ()
 				sed -i "$lastLine i\        {$thisGroup }" /var/lib/homebridge/config.json
 				echo $formatted
 			else
-				echo ">> JSON error. config.json has no final assessory without a comma after it"
-				echo ">> Please manually edit config.json and restart"
-				echo ""
-				break
+				#This might be a brand new file. Let's check:
+				accessoriesCount=$(grep -Fc '"accessories": [ ]' /var/lib/homebridge/config.json)
+				if [[ $accessoriesCount == 2 ]];
+				then
+					#Yes, it's a brand new file. Glue this first group into the first instance of '"accessories": [ ]'
+					sed -i -E "0,/\"accessories\":\ \[\ \]/s/(\"accessories\":\ \[)\ \]/\1\n\        {$thisGroup }\n\      ]/" /var/lib/homebridge/config.json
+				else
+					echo ">> JSON error. config.json has no final assessory without a comma after it"
+					echo ">> Please manually edit config.json and restart"
+					echo ""
+					break
+				fi
 			fi
 		fi
 	done 9</home/pi/my-platform.json
@@ -210,7 +224,7 @@ copy_groups ()
 
 restart_homebridge ()
 {
-	read -p "Restart Homebridge? [Y/n]: " restartResponse
+	read -p "Restart Homebridge? [Y/n]: " -n1 restartResponse
 	case $restartResponse in
 		(y|Y|"")
 			systemctl restart homebridge
@@ -231,7 +245,7 @@ test_install ()
 prompt_for_reboot()
 {
 	echo ""
-	read -p "Reboot now? [Y/n]: " rebootResponse
+	read -p "Reboot now? [Y/n]: " -n1 rebootResponse
 	case $rebootResponse in
 		(y|Y|"")
 			echo "Bye!"
