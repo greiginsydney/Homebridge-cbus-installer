@@ -203,7 +203,6 @@ copy_groups ()
 				sed -i -E "$lastLine s/^(\s*\{.+\}$)/\1,/"g /var/lib/homebridge/config.json
 				((lastLine+=1)) #Move the index to the line after, where we'll insert a new one
 				sed -i "$lastLine i\        {$thisGroup }" /var/lib/homebridge/config.json
-				echo $formatted
 			else
 				#This might be a brand new file. Let's check:
 				accessoriesCount=$(grep -Fc '"accessories": [ ]' /var/lib/homebridge/config.json)
@@ -294,11 +293,11 @@ case "$1" in
 		prompt_for_reboot
 		;;
 	("")
-		echo -e "\nNo option specified. Re-run with 'step1', 'step2', or 'test' after the script name\n"
+		echo -e "\nNo option specified. Re-run with 'step1', 'step2', 'copy' or 'test' after the script name\n"
 		exit 1
 		;;
 	(*)
-		echo -e "\nThe switch '$1' is invalid. Try again.\n"
+		echo -e "\nThe switch '$1' is invalid. Valid options are 'step1', 'step2', 'copy' and 'test'.\n"
 		exit 1
 		;;
 esac
