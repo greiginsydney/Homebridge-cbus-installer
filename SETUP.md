@@ -57,7 +57,7 @@ pi@192.168.1.10's password:
 23. Enter the password and press Return.
 24. It's STRONGLY recommended that you change the password. Run `passwd` and follow your nose.
 
-## Here's where all the software is updated and installed. This might take a while:
+## Here's where all the software is updated and installed:
 
 25. First let's make sure the Pi is all up-to-date:
 ```txt
