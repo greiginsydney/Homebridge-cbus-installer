@@ -78,6 +78,13 @@ step1 ()
 step2 ()
 {
 	cd  ${HOME}
+	if [ ! -f /usr/local/bin/cgate/config/C-GateConfig.txt ];
+	then
+		echo ""
+		echo "/usr/local/bin/cgate/config/C-GateConfig.txt does not exist (yet)."
+		echo "The reboot after Step 1 causes it to be created. Did you skip that?"
+		return
+	fi
 	projectName=$(find -maxdepth 1 -type f -iname "*.xml")
 	if [ ! -z "$projectName" ];
 	then
