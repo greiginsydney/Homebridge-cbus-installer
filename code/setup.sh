@@ -177,11 +177,12 @@ copy_groups ()
 					unset newType
 					while [ -z $newType ];
 					do
-						read -p "[l]ight, s[w]itch, [d]immer, [s]hutter, [m]otion, s[e]curity, [t]rigger, [c]ontact: " newType
+						read -p "[l]ight, s[w]itch, [d]immer, [f]an, [s]hutter, [m]otion, s[e]curity, [t]rigger, [c]ontact: " newType
 						case $newType in 
 							(l|L) replaceValue="light" ;;
 							(w|W) replaceValue="switch" ;;
 							(d|D) replaceValue="dimmer";;
+							(f|F) replaceValue="fan";;
 							(s|S) replaceValue="shutter";;
 							(m|M) replaceValue="motion";;
 							(e|E) replaceValue="security";;
