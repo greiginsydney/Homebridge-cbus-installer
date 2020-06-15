@@ -64,17 +64,23 @@ step1 ()
 	echo "/usr/local/bin/cgate/config/access.txt."
 	echo "Add your Admin machine's IP address here, or to whitelist an entire network"
 	echo "add it with '255' as the last octet. e.g.:"
-	echo "192.168.1.7 whitelists just the one machine, whereas"
-	echo "192.168.1.255 whitelists the whole 192.168.1.x network."
+	echo "  192.168.1.7 whitelists just the one machine, whereas"
+	echo "  192.168.1.255 whitelists the whole 192.168.1.x network."
 	echo "The more IPs you whitelist, the less secure C-Gate becomes."
 	echo ""
 	whitelistMe=$(hostname -I) #This gets the PI's current IP address
 	whitelistMe=$(awk -F"." '{print $1"."$2"."$3".255"}'<<<$whitelistMe) #This changes the last octet to 255
-	read -e -i "$whitelistMe" -p  "Enter an IP or network address to allow/whitelist : " whitelistMe
-	if [ ! -z "$whitelistMe" ];
-	then 
-		sed -i "/^## End of access control file/i interface $whitelistMe Program" /usr/local/bin/cgate/config/access.txt
-	fi
+	while [ 1 ];
+	do
+		read -e -i "$whitelistMe" -p  "Enter an IP or network address to allow/whitelist : " whitelistMe
+		if [ ! -z "$whitelistMe" ];
+		then 
+			sed -i "/^## End of access control file/i interface $whitelistMe Program" /usr/local/bin/cgate/config/access.txt
+			whitelistMe=""
+		else
+			break
+		fi
+	done
 	echo "======================================="
 	echo ""
 	# Prepare for reboot/restart:
