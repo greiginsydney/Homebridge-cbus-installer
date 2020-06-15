@@ -33,7 +33,7 @@ trap 'echo "\"${last_command}\"" command failed with exit code $?.' ERR
 
 step1 ()
 {
-	curl -sl https://deb.nodesource.com/setup_10.x | sudo -E bash -
+	curl -sl https://deb.nodesource.com/setup_12.x | sudo -E bash -
 	apt-get install -y nodejs
 	apt-get install -y libavahi-compat-libdnssd-dev
 	npm install -g --unsafe-perm homebridge
