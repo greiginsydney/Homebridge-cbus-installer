@@ -43,9 +43,15 @@ step1 ()
 	apt-get install openjdk-8-jre-headless -y
 	echo ""
 	echo ">> download and setup c-gate:"
-	wget https://updates.clipsal.com/clipsalsoftwaredownload/mainsite/cis/technical/cgate/cgate-2.11.4_3251.zip
-	unzip cgate-2.11.4_3251.zip
-	mv cgate /usr/local/bin
+	if [ ! -d /usr/local/bin/cgate ];
+	then
+		wget https://updates.clipsal.com/clipsalsoftwaredownload/mainsite/cis/technical/cgate/cgate-2.11.4_3251.zip
+		unzip cgate-2.11.4_3251.zip
+		mv cgate /usr/local/bin
+	else
+		echo ""
+		echo "/usr/local/bin/cgate exists - skipped the download"
+	fi
 	echo ""
 	echo ">> Set CGate to start as a service using systemd"
 	[ -f cgate.service ] && mv -fv cgate.service /etc/systemd/system/
