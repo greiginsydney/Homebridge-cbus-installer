@@ -33,8 +33,18 @@ trap 'echo "\"${last_command}\"" command failed with exit code $?.' ERR
 
 step1 ()
 {
-	curl -sl https://deb.nodesource.com/setup_12.x | sudo -E bash -
-	apt-get install -y nodejs
+	unamestr=`uname -m`
+	echo ""
+	echo "$unamestr detected"
+	if [[ "$unamestr" == 'armv6l' ]];
+	then
+		wget https://nodejs.org/dist/latest-v11.x/node-v11.15.0-linux-armv6l.tar.gz
+		tar -xzf node-v11.15.0-linux-armv6l.tar.gz
+		mv node-v11.15.0-linux-armv6l /usr/local/
+	else
+		curl -sl https://deb.nodesource.com/setup_12.x | sudo -E bash -
+		apt-get install -y nodejs
+	fi
 	apt-get install -y libavahi-compat-libdnssd-dev
 	npm install -g --unsafe-perm homebridge
 	npm install -g homebridge-cbus
