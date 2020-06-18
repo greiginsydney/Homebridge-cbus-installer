@@ -41,6 +41,7 @@ step1 ()
 		wget https://nodejs.org/dist/latest-v11.x/node-v11.15.0-linux-armv6l.tar.gz
 		tar -xzf node-v11.15.0-linux-armv6l.tar.gz
 		mv node-v11.15.0-linux-armv6l /usr/local/
+		apt-get update
 	else
 		curl -sl https://deb.nodesource.com/setup_12.x | sudo -E bash -
 		apt-get install -y nodejs
