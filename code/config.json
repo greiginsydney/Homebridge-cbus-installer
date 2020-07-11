@@ -8,7 +8,11 @@
   
   "description": "My home HomeKit API configuration file",
 
-  "platforms": [
+ "platforms": [{
+			"name": "Config",
+			"port": 8581,
+			"platform": "config"
+		},
     {
       "platform": "homebridge-cbus.CBus",
       "name": "CBus",
