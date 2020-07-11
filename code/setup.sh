@@ -33,14 +33,11 @@ trap 'echo "\"${last_command}\"" command failed with exit code $?.' ERR
 
 step1 ()
 {
-	curl -sl https://deb.nodesource.com/setup_12.x | sudo -E bash -
-	apt-get install -y nodejs
-	apt-get install -y libavahi-compat-libdnssd-dev
-	npm install -g --unsafe-perm homebridge
-	npm install -g homebridge-cbus
+	echo "======================================="
 	echo ""
 	echo ">> download and setup java:"
 	apt-get install openjdk-8-jre-headless -y
+	echo "======================================="
 	echo ""
 	echo ">> download and setup c-gate:"
 	if [ ! -d /usr/local/bin/cgate ];
@@ -58,8 +55,8 @@ step1 ()
 	systemctl enable cgate.service
 	systemctl start cgate.service
 	echo ""
-	echo ""
 	echo "======================================="
+	echo ""
 	echo "C-Gate won't let remote clients connect to it if they're not in the file"
 	echo "/usr/local/bin/cgate/config/access.txt."
 	echo "Add your Admin machine's IP address here, or to whitelist an entire network"
@@ -81,20 +78,17 @@ step1 ()
 			break
 		fi
 	done
-	echo "======================================="
-	echo ""
-	# Prepare for reboot/restart:
-	echo ">> Exited step 1 OK. A reboot is required to kick-start C-Gate and prepare for Step 2."
+	systemctl restart cgate.service
 }
 
 step2 ()
 {
+	# Step2 automatically follows Step1, but you can also manually jump here from the cmd line
 	cd  ${HOME}
 	if [ ! -f /usr/local/bin/cgate/config/C-GateConfig.txt ];
 	then
 		echo ""
-		echo "/usr/local/bin/cgate/config/C-GateConfig.txt does not exist (yet)."
-		echo "The reboot after Step 1 causes it to be created. Did you skip that?"
+		echo "ERROR: /usr/local/bin/cgate/config/C-GateConfig.txt does not exist."
 		return
 	fi
 	projectName=$(find -maxdepth 1 -type f -iname "*.xml")
@@ -107,23 +101,21 @@ step2 ()
 		sed -i -E "s/^project.default=(.*)/project.default=$filename/" /usr/local/bin/cgate/config/C-GateConfig.txt
 		sed -i -E "s/^project.start=(.*)/project.start=$filename/" /usr/local/bin/cgate/config/C-GateConfig.txt
 		sed -i -E "s/^(.*)HOME(.*)/\1$filename\2/" config.json
-		[ -f homebridge ] && mv -fv homebridge /etc/default/
-		[ -f homebridge.service ] && mv -fv homebridge.service /etc/systemd/system/
 		[ -f homebridge.timer ] && mv -fv homebridge.timer /etc/systemd/system/
-		id -u homebridge &>/dev/null || useradd -M --system homebridge
 		mkdir -pv /var/lib/homebridge
-		chown -R homebridge:homebridge /var/lib/homebridge
 		chmod 777 -R /var/lib/homebridge
 		[ -f config.json ] && mv -fv config.json /var/lib/homebridge/
 		touch my-platform.json
-		chown -R homebridge:homebridge /home/pi/my-platform.json
 		chmod 777 -R /home/pi/my-platform.json
+		systemctl stop homebridge
+		systemctl disable homebridge.service	#It runs under the control of the timer
 		systemctl daemon-reload
 		systemctl enable homebridge.timer
-		systemctl start homebridge.timer
 	else
+		echo "======================================="
 		echo ""
-		echo ">> No Tags file found. Please upload it to /home/pi/ and re-run Step2"
+		echo 'Copy your tags file (i.e. "<ProjectName>.xml)" to /home/pi/ and then run Step2'
+		echo "(If you don't know how to do this, I use WinSCP)"
 		echo ""
 		exit
 	fi
@@ -309,7 +301,7 @@ fi
 case "$1" in
 	("step1")
 		step1
-		prompt_for_reboot
+		step2
 		;;
 	("step2")
 		step2
