@@ -5,7 +5,7 @@
 - You'll need a Pi and memory card.
 - A network connection (either wired or Wifi depending on your preference).
 
-> If you're using a wired network, you'll need to be able to query your DHCP server so you can find the IP address that gets allocated to the Pi.
+> If you're using a wired network, you'll need to be able to query your DHCP server so you can find the IP address that gets allocated to the Pi. (In a simple home setup, your internet gateway device or WiFi router will also be your DHCP server.)
 
 - Your C-Bus network's "tags file". (This will be named after your project name and have a .xml extension).
 - Some software that will let you transfer the tags file to the Pi. I use [WinSCP](https://winscp.net/eng/index.php), but there are plenty of alternatives.
