@@ -6,8 +6,8 @@
     "pin": "031-45-154"
   },
   
-  "description": "My home HomeKit API configuration file",
-
+ "accessories": [ ],
+ 
  "platforms": [{
 			"name": "Config",
 			"port": 8581,
@@ -27,6 +27,5 @@
             
       "accessories": [ ]
     }
-  ],
-  "accessories": [ ]
+  ]
 }
