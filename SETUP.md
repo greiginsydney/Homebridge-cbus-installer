@@ -1,16 +1,46 @@
 # Setup the Pi
 
+## Pre-req's
+
+- You'll need a Pi and memory card.
+- A network connection (either wired or Wifi depending on your preference).
+
+> If you're using a wired network, you'll need to be able to query your DHCP server so you can find the IP address that gets allocated to the Pi.
+
+- Your C-Bus network's "tags file". (This will be named after your project name and have a .xml extension).
+- Some software that will let you transfer the tags file to the Pi. I use [WinSCP](https://winscp.net/eng/index.php), but there are plenty of alternatives.
+- Software that will let you connect via SSH to the Pi. (Windows 10 now does this natively.)
+
+
 If you're starting from scratch, start here at Step 1.
 
 
-1. Prepare the memory card with the latest [Rasbian xxx Lite](https://www.raspberrypi.org/downloads/raspbian/) image. (This process has been tested with "Buster").
-2. Add power and turn it on.
+1. Prepare the memory card with the [Homebridge Raspbian](https://github.com/homebridge/homebridge-raspbian-image) image.
+2. If you're building a Pi with a wired network connection, make sure it's connected before proceeding.
+3. Add power and turn it on.
+3. Wait a minute or two for the Pi to boot.
+4. If your Pi has a wired network, jump to Step 10.
+5. TODO: WiFi Setup steps.
+
+9. Jump to step TODO.
+10. Query your DHCP server to find the IP address that's been issued to the Homebridge.
+11. Launch a browser to that address, on port 8581. (i.e. http://192.168.1.10:8581)
+12. Sign in with the default credentials of admin/admin.
+13. Select "Plugins" from the navigation bar at the top:
+
+
+14. If there's an update available for Homebridge Configi UI X, click UPDATE and follow your nose. It might look like it's not doing anything, but it *is* updating. Don't be tempted to click the Close button; when it's done you'll be prompted to restart Homebridge:
+
+
+15. After Homebridge has restarted, return to the Plugins tab and in "Search for plugins to install..." type "Homebridge-Cbus" (without the quotes) and hit return. Select Install when it appears:
+
+
+For the following steps you need to transfer your C-bus network's Tags file to the Pi, and perform 
 
 ## Remote config via SSH
 
-At this point I abandoned the keyboard and monitor, continuing the config steps from my PC.
 
-19. SSH to the Pi using your preferred client. If you're using Windows 10 you can just do this from a PowerShell window: `ssh <TheIpAddressFromStep18> -l pi` (Note that's a lower-case L).
+19. SSH to the Pi using your preferred client. If you're using Windows 10 you can just do this from a PowerShell window: `ssh <TheIpAddressFromStep10> -l pi` (Note that's a lower-case L).
 20. You should see something like this:
 ```txt
 The authenticity of host '192.168.1.10 (192.168.1.10)' can't be established.
@@ -23,7 +53,7 @@ Are you sure you want to continue connecting (yes/no)?
 Warning: Permanently added '192.168.1.10' (ECDSA) to the list of known hosts.
 pi@192.168.1.10's password:
 ```
-23. Enter the password and press Return.
+23. Enter the password ('raspberry') and press Return.
 24. It's STRONGLY recommended that you change the password. Run `passwd` and follow your nose.
 
 ## Here's where all the software is updated and installed:
