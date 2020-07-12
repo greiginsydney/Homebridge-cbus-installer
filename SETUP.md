@@ -4,38 +4,7 @@ If you're starting from scratch, start here at Step 1.
 
 
 1. Prepare the memory card with the latest [Rasbian xxx Lite](https://www.raspberrypi.org/downloads/raspbian/) image. (This process has been tested with "Buster").
-2. Add HDMI, power and keyboard connections and turn it on. (You don't need a mouse for this, but add one if you're feeling so inclined).
-3. The boot process ends at a login screen. The default credentials are `pi` / `raspberry`.
-4. Login.
-5. Now we'll perform the basic customisation steps:
-6. Run `sudo raspi-config`.
-7. Select `(4) Localisation Options` then:
-    * `(I3) - change keyboard layout`
-    I've never needed to do anything but accept the defaults here. I found the Pi stopped responding for >10s after selecting "no compose key", so just wait for it and it will take you back to the main page.
-8. Return to (4) and set `(I2) the timezone`. Select the appropriate options and you'll be returned to the menu.
-9. Select `(5) - Interfacing Options`
-    * `(P2) Enable SSH` and at the prompt "Would you like the SSH server to be enabled?" change the selection to `<Yes>` and hit return, then return again at the `OK`.
-10. If you're building this onto a Pi with a wired network connection instead of WiFi, skip the next step. Resume at Step 12.
-11. Select `(2) Network Options` and `WiFi`. When prompted:
-    * Select your country
-    * Enter the local SSID and passphrase (password). Note that the Pi Zero W's radio is limited to 2.4G, so any attempts to connect to a 5G network will fail.
-12. Select `(2) Network Options` and `Hostname` and give the Pi a recognisable hostname.
-13. Navigate to `Finish` and DECLINE the prompt to reboot.
-14. Run `ifconfig`. In the output, look under "eth0" for wired and "wlan0" for WiFi. There should be a line starting with "inet" followed by an IP address. The absence of this means you're not on a network.
-15. Assuming success above, you'll probably want to set a static IP. If you're OK with a dynamic IP (or at least are for the time being) jump to Step 17.
-16. Run `sudo nano /etc/dhcpcd.conf`. Look for lines starting with `interface wlan0` (for WiFi), or `interface eth0` for a wired connection, customising the addresses to suit your network:
-
-```txt
-interface eth0
-static ip_address=192.168.1.10/24
-static routers=192.168.1.254
-static domain_name_servers=192.168.1.254
-```
-> If you have more than one DNS server, add them on the same line with each separated by a space
-17. Reboot the Pi to pickup its new IP address and lock in all the changes made above, including the change to the hostname: `sudo reboot now`.
-
-18. After it reboots, check it's on the network OK by typing `ifconfig` and check the output now shows the entries you added in Step 16.
-(Alternatively, just see if it responds to pings and you can SSH to it on its new IP).
+2. Add power and turn it on.
 
 ## Remote config via SSH
 
