@@ -28,12 +28,25 @@ If you're starting from scratch, start here at Step 1.
 12. Sign in with the default credentials of admin/admin.
 13. Select "Plugins" from the navigation bar at the top:
 
+<p align="center">
+<img src="https://user-images.githubusercontent.com/11004787/87238417-a6e47900-c445-11ea-8d60-86ddc7e3976e.png" width="60%">
+</p>
 
 14. If there's an update available for Homebridge Configi UI X, click UPDATE and follow your nose. It might look like it's not doing anything, but it *is* updating. Don't be tempted to click the Close button; when it's done you'll be prompted to restart Homebridge:
 
+<p align="center">
+<img src="https://user-images.githubusercontent.com/11004787/87238423-b95eb280-c445-11ea-94a9-8fce1de546ad.png" width="80%">
+</p>
 
-15. After Homebridge has restarted, return to the Plugins tab and in "Search for plugins to install..." type "Homebridge-Cbus" (without the quotes) and hit return. Select Install when it appears:
+<p align="center">
+<img src="https://user-images.githubusercontent.com/11004787/87238436-d2676380-c445-11ea-8b98-3734cfc1c99c.png" width="80%">
+</p>
 
+15. After Homebridge has restarted, return to the Plugins tab and in "Search for plugins to install..." type "Homebridge-Cbus" (without the quotes) and hit return. Select Install when that option appears:
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/11004787/87238440-e3b07000-c445-11ea-9f3e-853c5ea58c1f.png" width="80%">
+</p>
 
 For the following steps you need to transfer your C-bus network's Tags file to the Pi, and perform 
 
