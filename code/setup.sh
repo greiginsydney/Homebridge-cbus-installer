@@ -33,6 +33,10 @@ trap 'echo "\"${last_command}\"" command failed with exit code $?.' ERR
 
 step1 ()
 {
+	# echo "======================================="
+	# echo ""
+	# echo ">> download jq:"
+	# apt-get install jq
 	echo "======================================="
 	echo ""
 	echo ">> download and setup java:"
@@ -100,11 +104,14 @@ step2 ()
 		[ -f *.xml ] && mv *.xml /usr/local/bin/cgate/tag/ # mv xxxxx.xml /usr/local/bin/cgate/tag
 		sed -i -E "s/^project.default=(.*)/project.default=$filename/" /usr/local/bin/cgate/config/C-GateConfig.txt
 		sed -i -E "s/^project.start=(.*)/project.start=$filename/" /usr/local/bin/cgate/config/C-GateConfig.txt
-		sed -i -E "s/^(.*)HOME(.*)/\1$filename\2/" config.json
 		[ -f homebridge.timer ] && mv -fv homebridge.timer /etc/systemd/system/
-		mkdir -pv /var/lib/homebridge
-		chmod 777 -R /var/lib/homebridge
-		[ -f config.json ] && mv -fv config.json /var/lib/homebridge/
+		#Add the C-Gate settings to config.json:
+		# NB: jq can't edit in place, so we need to bounce through a .tmp file:
+		cp /var/lib/homebridge/config.json /var/lib/homebridge/config.json.tmp &&
+		cat /var/lib/homebridge/config.json.tmp | jq '.platforms += [{ "platform": "homebridge-cbus.CBus", "name": "CBus", "client_ip_address": "127.0.0.1", "client_controlport": 20023, "client_cbusname": "HOME", "client_network": 254, "client_application": 56, "client_debug": true, "platform_export": "/home/pi/my-platform.json", "accessories": [] }]' > /var/lib/homebridge/config.json &&
+		rm /var/lib/homebridge/config.json.tmp
+		#Update the Project name:
+		sed -i -E "s/^(.*)HOME(.*)/\1$filename\2/" /var/lib/homebridge/config.json
 		touch my-platform.json
 		chmod 777 -R /home/pi/my-platform.json
 		systemctl stop homebridge
@@ -207,28 +214,11 @@ copy_groups ()
 				echo 'Skipped: already in config.json'
 				continue
 			fi
-			#Capture the line number of the last group:
-			lastLine=$(sed -n -E '/^\s*\{.+\}$/=' /var/lib/homebridge/config.json)
-			if [ ! -z "$lastLine" ];
-			then
-				# Add a trailing comma to what's *currently* the last group:
-				sed -i -E "$lastLine s/^(\s*\{.+\}$)/\1,/"g /var/lib/homebridge/config.json
-				((lastLine+=1)) #Move the index to the line after, where we'll insert a new one
-				sed -i "$lastLine i\        {$thisGroup }" /var/lib/homebridge/config.json
-			else
-				#This might be a brand new file. Let's check:
-				accessoriesCount=$(grep -Fc '"accessories": [ ]' /var/lib/homebridge/config.json)
-				if [[ $accessoriesCount == 2 ]];
-				then
-					#Yes, it's a brand new file. Glue this first group into the first instance of '"accessories": [ ]'
-					sed -i -E "0,/\"accessories\":\ \[\ \]/s/(\"accessories\":\ \[)\ \]/\1\n\        {$thisGroup }\n\      ]/" /var/lib/homebridge/config.json
-				else
-					echo ">> JSON error. config.json has no final assessory without a comma after it"
-					echo ">> Please manually edit config.json and restart"
-					echo ""
-					break
-				fi
-			fi
+			
+			cp /var/lib/homebridge/config.json /var/lib/homebridge/config.json.tmp &&
+			cat /var/lib/homebridge/config.json.tmp | jq ' .platforms |= ( map(select(.name == "CBus").accessories += [{ '"$thisGroup"' }] ) )' > /var/lib/homebridge/config.json &&
+			rm /var/lib/homebridge/config.json.tmp
+			
 		fi
 	done 9</home/pi/my-platform.json
 	echo "Done"
