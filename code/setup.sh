@@ -152,7 +152,7 @@ copy_groups ()
 	RESET="\033[0m"
 	# This matches the format of the DISABLED accessories:
 	matchRegex="^\S+(.*)(,\ \"enabled\":\ false.*)$"
-	parseGroup="\"type\": (.*), \"network\": (.*), \"id\": (.*), \"name\": (.*)"
+	parseGroup="\"type\": (.*), \"id\": (.*), \"name\": (.*)"
 	# Read a line from the file:
 	# Thank you SO: https://stackoverflow.com/questions/6911520/read-command-in-bash-script-is-being-skipped
 	#defaultChoice=""
@@ -166,10 +166,9 @@ copy_groups ()
 			if [[ $thisGroup =~ $parseGroup ]] ;
 			then
 				thisType=${BASH_REMATCH[1]}
-				thisNetwork=${BASH_REMATCH[2]}
-				thisId=${BASH_REMATCH[3]}
-				thisName=${BASH_REMATCH[4]}
-				found=$(cat /var/lib/homebridge/config.json | jq ' .. | objects | select(.accessories) | .accessories | if type == "array" then .[] else . end | select(.type == '"$thisType"' and .network== '"$thisNetwork"' and .id == '"$thisId"' and .name == '"$thisName"')')
+				thisId=${BASH_REMATCH[2]}
+				thisName=${BASH_REMATCH[3]}
+				found=$(cat /var/lib/homebridge/config.json | jq ' .. | objects | select(.accessories) | .accessories | if type == "array" then .[] else . end | select(.type == '"$thisType"' and .id == '"$thisId"' and .name == '"$thisName"')')
 				if [ ! -z "$found" ]; then
 					echo 'Skipped: already in config.json'
 					#
@@ -248,10 +247,9 @@ copy_groups ()
 			if [[ $thisGroup =~ $parseGroup ]] ;
 			then
 				thisType=${BASH_REMATCH[1]}
-				thisNetwork=${BASH_REMATCH[2]}
-				thisId=${BASH_REMATCH[3]}
-				thisName=${BASH_REMATCH[4]}
-				found=$(cat /var/lib/homebridge/config.json | jq ' .. | objects | select(.accessories) | .accessories | if type == "array" then .[] else . end | select(.type == '"$thisType"' and .network== '"$thisNetwork"' and .id == '"$thisId"' and .name == '"$thisName"')')
+				thisId=${BASH_REMATCH[2]}
+				thisName=${BASH_REMATCH[3]}
+				found=$(cat /var/lib/homebridge/config.json | jq ' .. | objects | select(.accessories) | .accessories | if type == "array" then .[] else . end | select(.type == '"$thisType"' and .id == '"$thisId"' and .name == '"$thisName"')')
 				if [ ! -z "$found" ]; then
 					echo 'Skipped: already in config.json'
 					#
