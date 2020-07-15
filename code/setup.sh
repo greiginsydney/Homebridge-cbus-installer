@@ -110,11 +110,18 @@ step2 ()
 		sed -i -E "s/^project.start=(.*)/project.start=$filename/" /usr/local/bin/cgate/config/C-GateConfig.txt
 		systemctl restart cgate.service
 		[ -f homebridge.timer ] && mv -fv homebridge.timer /etc/systemd/system/
-		#Add the C-Gate settings to config.json:
-		# NB: jq can't edit in place, so we need to bounce through a .tmp file:
-		cp /var/lib/homebridge/config.json /var/lib/homebridge/config.json.tmp &&
-		cat /var/lib/homebridge/config.json.tmp | jq '.platforms += [{ "platform": "homebridge-cbus.CBus", "name": "CBus", "client_ip_address": "127.0.0.1", "client_controlport": 20023, "client_cbusname": "HOME", "client_network": 254, "client_application": 56, "client_debug": true, "platform_export": "/home/pi/my-platform.json", "accessories": [] }]' > /var/lib/homebridge/config.json &&
-		rm /var/lib/homebridge/config.json.tmp
+		#Add the C-Gate settings to config.json - if they don't already exist:
+		found=$(cat /var/lib/homebridge/config.json | jq ' .platforms | ( map(select(.name == "CBus")))')
+		if [ "$found" == "[]" ];
+		then
+			# NB: jq can't edit in place, so we need to bounce through a .tmp file:
+			cp /var/lib/homebridge/config.json /var/lib/homebridge/config.json.tmp &&
+			cat /var/lib/homebridge/config.json.tmp | jq '.platforms += [{ "platform": "homebridge-cbus.CBus", "name": "CBus", "client_ip_address": "127.0.0.1", "client_controlport": 20023, "client_cbusname": "HOME", "client_network": 254, "client_application": 56, "client_debug": true, "platform_export": "/home/pi/my-platform.json", "accessories": [] }]' > /var/lib/homebridge/config.json &&
+			rm /var/lib/homebridge/config.json.tmp
+			echo 'Added "homebridge-cbus.CBus" to /var/lib/homebridge/config.json OK'
+		else
+			echo 'Skipped: already in config.json'
+		fi
 		#Update the Project name:
 		sed -i -E "s/^(.*)HOME(.*)/\1$filename\2/" /var/lib/homebridge/config.json
 		touch my-platform.json
