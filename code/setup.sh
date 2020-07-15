@@ -33,10 +33,10 @@ trap 'echo "\"${last_command}\"" command failed with exit code $?.' ERR
 
 step1 ()
 {
-	# echo "======================================="
-	# echo ""
-	# echo ">> download jq:"
-	# apt-get install jq
+	echo "======================================="
+	echo ""
+	echo ">> download jq:"
+	apt-get install jq
 	echo "======================================="
 	echo ""
 	echo ">> download and setup java:"
