@@ -148,6 +148,7 @@ copy_groups ()
 	# See "88/256 Colors": https://misc.flogisoft.com/bash/tip_colors_and_formatting
 	GREEN="\033[38;5;10m"
 	YELLOW="\033[38;5;11m"
+	GREY="\033[38;5;60m"
 	RESET="\033[0m"
 	# This matches the format of the DISABLED accessories:
 	matchRegex="^\S+(.*)(,\ \"enabled\":\ false.*)$"
@@ -184,7 +185,7 @@ copy_groups ()
 			if [[ $thisGroup =~ $matchUnknown ]];
 			then
 				defaultChoice="c"
-				read -p "$(echo -e "[a]dd, [s]kip, "$YELLOW"[C]hange & enable"$RESET", [q]uit? ")" choice
+				read -p "$(echo -e ""$GREY"[a]dd,"$RESET" [s]kip, "$YELLOW"[C]hange & enable"$RESET", [q]uit? ")" choice
 			else
 				defaultChoice="a"
 				read -p "$(echo -e ""$GREEN"[A]dd"$RESET", [s]kip, [C]hange & enable, [q]uit? ")" choice
@@ -203,7 +204,16 @@ copy_groups ()
 			fi
 			case $choice in
 				(a|A)
-					echo "Added"
+					#
+					# TODO: Neaten this. Invalidate A properly where type is Unknown
+					#
+					if [ "$defaultChoice" == "c" ] ;
+					then
+						echo "No you dont"
+						continue
+					else
+						echo "Added"
+					fi
 					;;
 				(s|S)
 					echo "Skipped"
