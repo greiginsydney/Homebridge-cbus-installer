@@ -139,6 +139,7 @@ copy_groups ()
 	RESET="\033[0m"
 	# This matches the format of the DISABLED accessories:
 	matchRegex="^\S+(.*)(,\ \"enabled\":\ false.*)$"
+	parseGroup="\"type\": (.*), \"network\": (.*), \"id\": (.*), \"name\": (.*)"
 	# Read a line from the file:
 	# Thank you SO: https://stackoverflow.com/questions/6911520/read-command-in-bash-script-is-being-skipped
 	#defaultChoice=""
@@ -147,13 +148,26 @@ copy_groups ()
 		then
 			thisGroup=${BASH_REMATCH[1]}
 			echo ""
-			echo ${BASH_REMATCH[1]}
+			echo $thisGroup
 			#Skip if it's already in the file:
-			if grep -Fq "$thisGroup" /var/lib/homebridge/config.json;
+			if [[ $thisGroup =~ $parseGroup ]] ;
 			then
-				echo 'Skipped: already in config.json'
-				continue
+				thisType=${BASH_REMATCH[1]}
+				thisNetwork=${BASH_REMATCH[2]}
+				thisId=${BASH_REMATCH[3]}
+				thisName=${BASH_REMATCH[4]}
+				found=$(cat /var/lib/homebridge/config.json | jq ' .. | objects | select(.accessories) | .accessories | if type == "array" then .[] else . end | select(.type == '"$thisType"' and .network== '"$thisNetwork"' and .id == '"$thisId"' and .name == '"$thisName"')')
+				if [ ! -z "$found" ]; then
+					echo 'Skipped: already in config.json'
+					#
+					# TODO: Give the user the option to change the type
+					#
+					continue
+				fi
+			else
+				echo "Parse failed" # A debug line, but happy to leave it here to server as a coal mine canary
 			fi
+			
 			matchUnknown="\"type\":\ \"unknown\"(.+)"
 			if [[ $thisGroup =~ $matchUnknown ]];
 			then
@@ -208,15 +222,27 @@ copy_groups ()
 					break #We're outta here
 					;;
 			esac
-			#Skip if a changed value (e.g. from "Unknown") is already in the file:
-			if grep -Fq "$thisGroup" /var/lib/homebridge/config.json;
+			#Skip if a changed group type (e.g. from "Unknown") is already in the file:
+			if [[ $thisGroup =~ $parseGroup ]] ;
 			then
-				echo 'Skipped: already in config.json'
-				continue
+				thisType=${BASH_REMATCH[1]}
+				thisNetwork=${BASH_REMATCH[2]}
+				thisId=${BASH_REMATCH[3]}
+				thisName=${BASH_REMATCH[4]}
+				found=$(cat /var/lib/homebridge/config.json | jq ' .. | objects | select(.accessories) | .accessories | if type == "array" then .[] else . end | select(.type == '"$thisType"' and .network== '"$thisNetwork"' and .id == '"$thisId"' and .name == '"$thisName"')')
+				if [ ! -z "$found" ]; then
+					echo 'Skipped: already in config.json'
+					#
+					# TODO: *Update* the type of the existing record
+					#
+					continue
+				fi
+			else
+				echo "Parse failed (second test)" # A debug line, but happy to leave it here to server as a coal mine canary
 			fi
 			
 			cp /var/lib/homebridge/config.json /var/lib/homebridge/config.json.tmp &&
-			cat /var/lib/homebridge/config.json.tmp | jq ' .platforms |= ( map(select(.name == "CBus").accessories += [{ '"$thisGroup"' }] ) )' > /var/lib/homebridge/config.json &&
+			cat /var/lib/homebridge/config.json.tmp | jq ' .platforms |= ( map(select(.name == "CBus").accessories += [{ '"$thisGroup"' }] ))' > /var/lib/homebridge/config.json &&
 			rm /var/lib/homebridge/config.json.tmp
 			
 		fi
