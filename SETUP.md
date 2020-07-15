@@ -18,10 +18,11 @@ If you're starting from scratch, start here at Step 1.
 1. Prepare the memory card with the [Homebridge Raspbian](https://github.com/homebridge/homebridge-raspbian-image) image.
 2. If you're building a Pi with a wired network connection, make sure it's connected before proceeding.
 3. Add power and turn it on.
-3. Wait a minute or two for the Pi to boot.
-4. If your Pi has a wired network, jump to Step 10.
-5. TODO: WiFi Setup steps.
-
+4. Wait a minute or two for the Pi to boot.
+5. If your Pi has a wired network, jump to Step 10.
+6. TODO: WiFi Setup steps.
+7. TODO
+8. TODO
 9. Jump to step TODO.
 10. Query your DHCP server to find the IP address that's been issued to the Homebridge.
 11. Launch a browser to that address, on port 8581. (i.e. http://192.168.1.10:8581)
