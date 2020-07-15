@@ -51,7 +51,7 @@ step1 ()
 		mv cgate /usr/local/bin
 	else
 		echo ""
-		echo "/usr/local/bin/cgate exists - skipped the download"
+		echo "/usr/local/bin/cgate exists. Download skipped"
 	fi
 	echo ""
 	echo ">> Set CGate to start as a service using systemd"
@@ -82,13 +82,17 @@ step1 ()
 			break
 		fi
 	done
-	systemctl restart cgate.service
 }
 
 step2 ()
 {
 	# Step2 automatically follows Step1, but you can also manually jump here from the cmd line
-	cd  ${HOME}
+	
+	#If you run Step2 with the -H switch (i.e. as root) it sets the path of /home/pi, otherwise follows the actual users $HOME env dir
+	if [ "${HOME}" == "/root" ];
+	then
+		cd "/home/pi/"
+	fi
 	if [ ! -f /usr/local/bin/cgate/config/C-GateConfig.txt ];
 	then
 		echo ""
@@ -104,6 +108,7 @@ step2 ()
 		[ -f *.xml ] && mv *.xml /usr/local/bin/cgate/tag/ # mv xxxxx.xml /usr/local/bin/cgate/tag
 		sed -i -E "s/^project.default=(.*)/project.default=$filename/" /usr/local/bin/cgate/config/C-GateConfig.txt
 		sed -i -E "s/^project.start=(.*)/project.start=$filename/" /usr/local/bin/cgate/config/C-GateConfig.txt
+		systemctl restart cgate.service
 		[ -f homebridge.timer ] && mv -fv homebridge.timer /etc/systemd/system/
 		#Add the C-Gate settings to config.json:
 		# NB: jq can't edit in place, so we need to bounce through a .tmp file:
@@ -165,7 +170,7 @@ copy_groups ()
 					continue
 				fi
 			else
-				echo "Parse failed" # A debug line, but happy to leave it here to serve as a coal mine canary
+				echo "PARSE FAILED!!" # A debug line, but happy to leave it here to serve as a coal mine canary
 			fi
 			
 			matchUnknown="\"type\":\ \"unknown\"(.+)"
@@ -238,7 +243,7 @@ copy_groups ()
 					continue
 				fi
 			else
-				echo "Parse failed (second test)" # A debug line, but happy to leave it here to serve as a coal mine canary
+				echo "PARSE FAILED!! (Second test)" # A debug line, but happy to leave it here to serve as a coal mine canary
 			fi
 			
 			cp /var/lib/homebridge/config.json /var/lib/homebridge/config.json.tmp &&
@@ -318,6 +323,7 @@ case "$1" in
 	("step1")
 		step1
 		step2
+		prompt_for_reboot
 		;;
 	("step2")
 		step2
