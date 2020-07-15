@@ -165,7 +165,7 @@ copy_groups ()
 					continue
 				fi
 			else
-				echo "Parse failed" # A debug line, but happy to leave it here to server as a coal mine canary
+				echo "Parse failed" # A debug line, but happy to leave it here to serve as a coal mine canary
 			fi
 			
 			matchUnknown="\"type\":\ \"unknown\"(.+)"
@@ -238,7 +238,7 @@ copy_groups ()
 					continue
 				fi
 			else
-				echo "Parse failed (second test)" # A debug line, but happy to leave it here to server as a coal mine canary
+				echo "Parse failed (second test)" # A debug line, but happy to leave it here to serve as a coal mine canary
 			fi
 			
 			cp /var/lib/homebridge/config.json /var/lib/homebridge/config.json.tmp &&
