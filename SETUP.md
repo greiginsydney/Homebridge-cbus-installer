@@ -17,6 +17,9 @@ If you're starting from scratch, start here at Step 1.
 
 1. Prepare the memory card with the [Homebridge Raspbian](https://github.com/homebridge/homebridge-raspbian-image) image.
 2. If you're building a Pi with a wired network connection, make sure it's connected before proceeding.
+
+> You don't need to connect a monitor or keyboard, although if you have one, a monitor will display some extra info that might help if you're having problems connecting to the Pi in the later steps.
+
 3. Add power and turn it on.
 4. Wait a minute or two for the Pi to boot.
 5. If your Pi has a wired network, jump to Step 10.
