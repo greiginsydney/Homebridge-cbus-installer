@@ -212,11 +212,11 @@ Created symlink /etc/systemd/system/multi-user.target.wants/homebridge.timer →
 
 Reboot now? [Y/n]:
 ```
-Pressing return or anything but Y/y will cause the Pi to reboot.
+Pressing Return or anything but Y/y will cause the Pi to reboot.
 
-35. Once the Pi reboots, C-Gate and homebridge will come up. It's this stage that populates your "my-platform.json" file, and this is likely to take a few minutes.
+35. Once the Pi reboots, C-Gate and Homebridge will come up. It's this stage that populates your "my-platform.json" file, and this is likely to take a few minutes.
 
-36. If you're the curious type, sign back in and enable logging. Hopefully it will output a lot of messages as homebridge discovers all the units on your network:
+36. If you're the curious type, sign back in and enable logging. Hopefully it will output a lot of messages as Homebridge discovers all the units on your network:
 ```txt
 sudo journalctl -u homebridge.service -f
 ```
@@ -242,7 +242,7 @@ If you have a small C-Bus network and there aren't a lot of GAs, it's a simple m
 sudo -E ./setup.sh copy
 ```
 
-40. If the script exits with "Done" immediately, the mostly likely reason is that you've not given homebridge enough time to populate the my-platform.json file. Wait a couple of minutes and try again.
+40. If the script exits with "Done" immediately, the mostly likely reason is that you've not given Homebridge enough time to populate the my-platform.json file. Wait a couple of minutes and try again.
 ```txt
 sudo -E ./setup.sh copy
 Done
@@ -291,7 +291,7 @@ Restart Homebridge? [Y/n]:
 
 46. At this point you can turn to your iDevice, launch Home and select "Add Accessory".
 
-47. Click the button "I Don't Have a Code or Cannot Scan", then under the Manual Code heading on the next screen click the "Enter code..." link and enter the PIN shown on-screen at the end of Step 44. You should be able to follow your nose from there.
+47. Click the button "I Don't Have a Code or Cannot Scan", then under the Manual Code heading on the next screen click the "Enter code..." link and enter the PIN shown on-screen at the end of Step 45. You should be able to follow your nose from there.
 
 48. You're free to repeat step 39 at any time. You won't be prompted for any of the GAs you added before, so if you want to change the "type" of an existing GA you'll need to do this by hand (`sudo nano /var/lib/homebridge/config.json`). Any GAs that you've recently added to the network or you may have subsequently decided to include can now be added to config.json just by responding to the prompts.
 
