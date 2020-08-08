@@ -101,18 +101,18 @@ On Windows, the default path for it is `C:\Clipsal\C-Gate2\tag\` and it will be 
 
 ## Remote config via SSH
 
-14. SSH to the Pi using your preferred client. If you're using Windows 10 you can just do this from a PowerShell window: `ssh <TheIpAddressFromStep10> -l pi` (Note that's a lower-case L).
+14. SSH to the Pi using your preferred client. If you're using Windows 10 you can just do this from a PowerShell window: `ssh <TheIpAddressFromStep11> -l pi` (Note that's a lower-case L).
 15. You should see something like this:
 ```txt
-The authenticity of host '192.168.1.10 (192.168.1.10)' can't be established.
+The authenticity of host '10.10.17.15 (10.10.17.15)' can't be established.
 ECDSA key fingerprint is SHA256:Ty0Bw6IZqg1234567899006534456778sFKT6QakOZ5PdJk.
 Are you sure you want to continue connecting (yes/no)?
 ```
 16. Enter `yes` and press Return
 17. The response should look like this:
 ```txt
-Warning: Permanently added '192.168.1.10' (ECDSA) to the list of known hosts.
-pi@192.168.1.10's password:
+Warning: Permanently added '10.10.17.15' (ECDSA) to the list of known hosts.
+pi@10.10.17.15's password:
 ```
 18. Enter the password ('raspberry') and press Return.
 19. It's STRONGLY recommended that you change the password. Run `passwd` and follow your nose.
@@ -166,26 +166,33 @@ add it with '255' as the last octet. e.g.:
 192.168.1.255 whitelists the whole 192.168.1.x network.
 The more IPs you whitelist, the less secure C-Gate becomes.
 
-Enter an IP or network address to allow/whitelist : 10.10.16.255
+Enter an IP or network address to allow/whitelist : 10.10.17.255
+Enter an IP or network address to allow/whitelist :
 ```
 
-28. If all goes well, you'll be presented with a prompt to reboot:
+28. This menu will loop, allowing you to enter extra IPs. Press \<return\> on its own to break out of this loop.
+
+```
+Enter an IP or network address to allow/whitelist :
+```
+
+29. If all goes well, you'll be presented with a prompt to reboot:
 ```txt
 >> Exited step 1 OK. A reboot is required to kick-start C-Gate and prepare for Step 2.
 Reboot now? [Y/n]:
 ```
 Pressing return or anything but Y/y will cause the Pi to reboot.
 
-29. While you wait for the Pi to reboot, copy the tagsfile ("something.xml") from your existing C-Bus setup to /home/pi/. On a default Windows installation of C-Gate/Toolkit the file will be in C:\Clipsal\C-Gate2\tag\. (I use [WinSCP](https://winscp.net/eng/download.php) for this.)
+30. While you wait for the Pi to reboot, copy the tagsfile ("something.xml") from your existing C-Bus setup to /home/pi/. On a default Windows installation of C-Gate/Toolkit the file will be in C:\Clipsal\C-Gate2\tag\. (I use [WinSCP](https://winscp.net/eng/download.php) for this.)
 
 > Make sure the filename is the name of your network, because the script uses the filename to populate several places in the config where C-Gate and Homebridge need to know the network name.
 
-30. After the Pi has rebooted, sign back in again and resume. The next step is to re-run the script, but with a new switch:
+31. After the Pi has rebooted, sign back in again and resume. The next step is to re-run the script, but with a new switch:
 ```txt
 sudo -E ./setup.sh step2
 ```
 
-31. The script will now move some of the supporting files from the repo to their final homes, and edit some of the default config in the Pi. 
+32. The script will now move some of the supporting files from the repo to their final homes, and edit some of the default config in the Pi. 
 
 It will output its progress to the screen. You'll see it's gone with "19P" which is my network name:
 ```txt
@@ -203,9 +210,9 @@ Reboot now? [Y/n]:
 ```
 Pressing return or anything but Y/y will cause the Pi to reboot.
 
-32. Once the Pi reboots, C-Gate and homebridge will come up. It's this stage that populates your "my-platform.json" file, and this is likely to take a few minutes.
+33. Once the Pi reboots, C-Gate and homebridge will come up. It's this stage that populates your "my-platform.json" file, and this is likely to take a few minutes.
 
-33. If you're the curious type, sign back in and enable logging. Hopefully it will output a lot of messages as homebridge discovers all the units on your network:
+34. If you're the curious type, sign back in and enable logging. Hopefully it will output a lot of messages as homebridge discovers all the units on your network:
 ```txt
 sudo journalctl -u homebridge.service -f
 ```
@@ -218,20 +225,20 @@ Dec 27 15:10:15 homebridge homebridge[504]: 2019-12-27T04:10:15.425Z cbus:client
 
 ## Tweak the config
 
-34. At this point you have an almost working Homebridge setup, but some tweaking and fine-tuning is required.
+35. At this point you have an almost working Homebridge setup, but some tweaking and fine-tuning is required.
 
-35. "Step 2" created an empty file called "my-platform.json" in /home/pi, and following the reboot in Step 36 it will be populated with  the details of all the Group Addresses ('GAs') that were reported by C-Gate. The type of device has been _guessed_ by Homebridge-cbus, and some of these will need correcting.
+36. "Step 2" created an empty file called "my-platform.json" in /home/pi, and following the reboot in Step 32 it will be populated with the details of all the Group Addresses ('GAs') that were reported by C-Gate. The type of device has been _guessed_ by Homebridge-cbus, and some of these will need correcting.
 
 Review the ["Functional example config.json" file](https://github.com/anthonywebb/homebridge-cbus#functional-example-configjson), and compare that with both yours (/var/lib/homebridge/config.json) and your "my-platform.json".
 
-If you have a small C-Bus network and there aren't a lot of GAs, it's a simple matter to copy and paste from one text file to another, but if your network's larger or more complicated, the script can do this for you.
+If you have a small C-Bus network and there aren't a lot of GAs, it's a simple matter to copy and paste from one text file to another, but if your network's larger or more complicated, the script should make it easier for you.
 
-36. To use the script, re-run it with the new 'copy' switch:
+37. To use the script, re-run it with the new 'copy' switch:
 ```txt
 sudo -E ./setup.sh copy
 ```
 
-37. If the script exits with "Done" immediately, the mostly likely reason is that you've not given homebridge enough time to populate the my-platform.json file. Wait a couple of minutes and try again.
+38. If the script exits with "Done" immediately, the mostly likely reason is that you've not given homebridge enough time to populate the my-platform.json file. Wait a couple of minutes and try again.
 ```txt
 sudo -E ./setup.sh copy
 Done
@@ -241,16 +248,16 @@ The PIN to enter in your iDevice is 031-45-154
 Restart Homebridge? [Y/n]:
 ```
 
-38. Assuming the file has been populated OK, the script will now read through all the GAs in my-platform.json, and if they don't exist in config.json, prompt you one-by-one to Add them, Skip them, and where the "type" of channel is reported as unknown or was guessed incorrectly, Change them to one of the possible types.
+39. Assuming the file has been populated OK, the script will now read through all the GAs in my-platform.json, and if they don't exist in config.json, prompt you one-by-one to Add them, Skip them, and where the "type" of channel is reported as unknown or was guessed incorrectly, Change them to one of the possible types.
 
-39. Where the Group's details are correct, pressing Return will accept the default, Add, which is highlighted in green:
+40. Where the Group's details are correct, pressing Return will accept the default, Add, which is highlighted in green:
 ```txt
 "type": "dimmer", "id": 18, "name": "Lounge room"
 [A]dd, [s]kip, [C]hange & enable, [q]uit?
 Added
 ```
 
-40. All that are reported as "unknown" are highlighted in yellow, and pressing Return defaults to show the Change sub-menu. Choose the highlighted letter of the appropriate type and press Return:
+41. All that are reported as "unknown" are highlighted in yellow, and pressing Return defaults to show the Change sub-menu. Choose the highlighted letter of the appropriate type and press Return:
 ```txt
 "type": "unknown", "id": 21, "name": "Exhaust fan"
 [a]dd, [s]kip, [C]hange & enable, [q]uit?
@@ -259,7 +266,7 @@ Change to:
 Changed to switch
 ```
 
-41. Press "s" and return to Skip any spare, unknown or unwanted GAs, and then "q" once you're done:
+42. Press "s" and return to Skip any spare, unknown or unwanted GAs, and then "q" once you're done:
 ```txt
 "type": "light", "id": 22, "name": "Ceiling GPO"
 [A]dd, [s]kip, [C]hange & enable, [q]uit? s
@@ -274,15 +281,15 @@ The PIN to enter in your iDevice is 031-45-154
 Restart Homebridge? [Y/n]:
 ```
 
-42. Pressing return or anything but Y/y will restart Homebridge to pick up the new settings.
+43. Pressing return or anything but Y/y will restart Homebridge to pick up the new settings.
 
 ![setup.sh-copy.png](/images/setup.sh-copy.png)
 
-43. At this point you can turn to your iDevice, launch Home and select "Add Accessory".
+44. At this point you can turn to your iDevice, launch Home and select "Add Accessory".
 
-44. Click the button "I Don't Have a Code or Cannot Scan", then under the Manual Code heading on the next screen click the "Enter code..." link and enter the PIN shown on-screen at the end of Step 41. You should be able to follow your nose from there.
+45. Click the button "I Don't Have a Code or Cannot Scan", then under the Manual Code heading on the next screen click the "Enter code..." link and enter the PIN shown on-screen at the end of Step 42. You should be able to follow your nose from there.
 
-45. You're free to repeat step 36 at any time. You won't be prompted for any of the GAs you added before, so if you want to change the "type" of an existing GA you'll need to do this by hand (`sudo nano /var/lib/homebridge/config.json`). Any GAs that you've recently added to the network or you may have subsequently decided to include can now be added to config.json just by responding to the prompts.
+46. You're free to repeat step 37 at any time. You won't be prompted for any of the GAs you added before, so if you want to change the "type" of an existing GA you'll need to do this by hand (`sudo nano /var/lib/homebridge/config.json`). Any GAs that you've recently added to the network or you may have subsequently decided to include can now be added to config.json just by responding to the prompts.
 
 <br>
 
