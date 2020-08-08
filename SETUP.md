@@ -22,21 +22,72 @@ If you're starting from scratch, start here at Step 1.
 
 3. Add power and turn it on.
 4. Wait a minute or two for the Pi to boot.
-5. If your Pi has a wired network, jump to Step 10.
-6. TODO: WiFi Setup steps.
-7. TODO
-8. TODO
-9. Jump to step TODO.
-10. Query your DHCP server to find the IP address that's been issued to the Homebridge.
-11. Launch a browser to that address, on port 8581. (i.e. http://192.168.1.10:8581)
-12. Sign in with the default credentials of admin/admin.
-13. Select "Plugins" from the navigation bar at the top:
+5. __If you're building the Pi on a wired network, jump to Step 10.__
+6. The Pi will create a WiFi network called "Homebridge WiFi Setup". Connect to it from a computer or your phone:
+
+<table>
+  <tr>
+    <th>Mobile</th>
+    <th>PC</th>
+  </tr>
+  <tr>
+    <td>
+      <p align="center">
+      <img src="https://user-images.githubusercontent.com/11004787/89696847-ff336b80-d95c-11ea-9f16-a4b793761ab8.png" width="40%">
+      </p>
+    </td>
+    <td>
+      <p align="center">
+      <img src="https://user-images.githubusercontent.com/11004787/89696867-09ee0080-d95d-11ea-8103-e557a61e2c7f.png" width="40%">
+      </p>
+    </td>
+  </tr>
+</table>
+
+7. A browser window should open prompting you for the details of your normal WiFi network. Enter its SSID, passphrase and tap/click Connect:
+
+<table>
+  <tr>
+    <th>Mobile</th>
+    <th>PC</th>
+  </tr>
+  <tr>
+    <td>
+      <p align="center">
+      <img src="https://user-images.githubusercontent.com/11004787/89696959-5df8e500-d95d-11ea-9782-27a53eee3baf.png" width="40%">
+      </p>
+    </td>
+    <td>
+      <p align="center">
+      <img src="https://user-images.githubusercontent.com/11004787/89696964-66512000-d95d-11ea-9726-7207273ea1fb.png" width="40%">
+      </p>
+    </td>
+  </tr>
+</table>
+
+8. The Pi will now attempt to connect to that WiFi network. If it is unable to (bad password?) it will revert to its "Homebridge WiFi Setup" network for you to try again:
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/11004787/89697114-09a23500-d95e-11ea-9aaf-319841e5b85d.png" width="40%">
+</p>
+
+> The success of the above will be indicated by the "Homebridge WiFi Setup" network disappearing from the list of available networks.
+
+9. Reconnect to your normal WiFi network.
+
+10. Launch a browser to http://homebridge.local & sign in with the default credentials of admin/admin:
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/11004787/89697356-29862880-d95f-11ea-92ff-1ea033e72e9f.png" width="60%">
+</p>
+
+11. Select "Plugins" from the navigation bar at the top:
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/11004787/87238417-a6e47900-c445-11ea-8d60-86ddc7e3976e.png" width="60%">
 </p>
 
-14. If there's an update available for Homebridge Configi UI X, click UPDATE and follow your nose. It might look like it's not doing anything, but it *is* updating. Don't be tempted to click the Close button; when it's done you'll be prompted to restart Homebridge:
+12. If there's an update available for Homebridge Config UI X, click UPDATE and follow your nose. It might look like it's not doing anything, but it *is* updating. Don't be tempted to click the Close button; when it's done you'll be prompted to restart Homebridge:
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/11004787/87238423-b95eb280-c445-11ea-94a9-8fce1de546ad.png" width="80%">
