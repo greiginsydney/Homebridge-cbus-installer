@@ -103,14 +103,18 @@ On Windows, the default path for it is `C:\Clipsal\C-Gate2\tag\` and it will be 
 
 ## Remote config via SSH
 
-14. SSH to the Pi using your preferred client. If you're using Windows 10 you can just do this from a PowerShell window: `ssh <TheIpAddressFromStep11> -l pi` (Note that's a lower-case L).
+14. SSH to the Pi using your preferred client. If you're using Windows 10 you can just do this from a PowerShell window:
+
+```ssh <TheIpAddressFromStep11> -l pi``` (Note that's a lower-case L).
+
+
 15. You should see something like this:
 ```txt
 The authenticity of host '10.10.17.15 (10.10.17.15)' can't be established.
 ECDSA key fingerprint is SHA256:Ty0Bw6IZqg1234567899006534456778sFKT6QakOZ5PdJk.
 Are you sure you want to continue connecting (yes/no)?
 ```
-16. Enter `yes` and press Return
+16. Enter `yes` and press Return.
 17. The response should look like this:
 ```txt
 Warning: Permanently added '10.10.17.15' (ECDSA) to the list of known hosts.
@@ -172,7 +176,7 @@ Enter an IP or network address to allow/whitelist : 10.10.17.255
 Enter an IP or network address to allow/whitelist :
 ```
 
-28. This menu will loop, allowing you to enter extra IPs. Press \<return\> on its own to break out of this loop.
+28. This menu will loop, allowing you to enter extra IPs. Press Return on its own to break out of this loop.
 
 29. If you overlooked copying the tags file in Step 12, or put it in the wrong location on the Pi, the script will exit:
 
@@ -191,7 +195,7 @@ sudo -E ./setup.sh step2
 
 31. Step 32 here picks up with the output from the script's "step2". (Yes, I probably need to rename them to make this less confusing.)
 
-32. __If everything went OK after step 28, the script proceeded to run step2 automatically.__
+32. __If everything went OK after step 28, the script proceeds to run step2 automatically.__
 
 33. The script will now move some of the supporting files from the repo to their final homes, and edit some of the default config in the Pi. 
 
