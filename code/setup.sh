@@ -33,14 +33,15 @@ trap 'echo "\"${last_command}\"" command failed with exit code $?.' ERR
 
 step1 ()
 {
-	curl -sl https://deb.nodesource.com/setup_12.x | sudo -E bash -
-	apt-get install -y nodejs
-	apt-get install -y libavahi-compat-libdnssd-dev
-	npm install -g --unsafe-perm homebridge
-	npm install -g homebridge-cbus
+	echo "======================================="
+	echo ""
+	echo ">> download jq:"
+	apt-get install jq
+	echo "======================================="
 	echo ""
 	echo ">> download and setup java:"
 	apt-get install openjdk-8-jre-headless -y
+	echo "======================================="
 	echo ""
 	echo ">> download and setup c-gate:"
 	if [ ! -d /usr/local/bin/cgate ];
@@ -50,7 +51,7 @@ step1 ()
 		mv cgate /usr/local/bin
 	else
 		echo ""
-		echo "/usr/local/bin/cgate exists - skipped the download"
+		echo "/usr/local/bin/cgate exists. Download skipped"
 	fi
 	echo ""
 	echo ">> Set CGate to start as a service using systemd"
@@ -58,8 +59,8 @@ step1 ()
 	systemctl enable cgate.service
 	systemctl start cgate.service
 	echo ""
-	echo ""
 	echo "======================================="
+	echo ""
 	echo "C-Gate won't let remote clients connect to it if they're not in the file"
 	echo "/usr/local/bin/cgate/config/access.txt."
 	echo "Add your Admin machine's IP address here, or to whitelist an entire network"
@@ -81,20 +82,21 @@ step1 ()
 			break
 		fi
 	done
-	echo "======================================="
-	echo ""
-	# Prepare for reboot/restart:
-	echo ">> Exited step 1 OK. A reboot is required to kick-start C-Gate and prepare for Step 2."
 }
 
 step2 ()
 {
-	cd  ${HOME}
+	# Step2 automatically follows Step1, but you can also manually jump here from the cmd line
+	
+	#If you run Step2 with the -H switch (i.e. as root) it sets the path of /home/pi, otherwise follows the actual users $HOME env dir
+	if [ "${HOME}" == "/root" ];
+	then
+		cd "/home/pi/"
+	fi
 	if [ ! -f /usr/local/bin/cgate/config/C-GateConfig.txt ];
 	then
 		echo ""
-		echo "/usr/local/bin/cgate/config/C-GateConfig.txt does not exist (yet)."
-		echo "The reboot after Step 1 causes it to be created. Did you skip that?"
+		echo "ERROR: /usr/local/bin/cgate/config/C-GateConfig.txt does not exist."
 		return
 	fi
 	projectName=$(find -maxdepth 1 -type f -iname "*.xml")
@@ -106,24 +108,33 @@ step2 ()
 		[ -f *.xml ] && mv *.xml /usr/local/bin/cgate/tag/ # mv xxxxx.xml /usr/local/bin/cgate/tag
 		sed -i -E "s/^project.default=(.*)/project.default=$filename/" /usr/local/bin/cgate/config/C-GateConfig.txt
 		sed -i -E "s/^project.start=(.*)/project.start=$filename/" /usr/local/bin/cgate/config/C-GateConfig.txt
-		sed -i -E "s/^(.*)HOME(.*)/\1$filename\2/" config.json
-		[ -f homebridge ] && mv -fv homebridge /etc/default/
-		[ -f homebridge.service ] && mv -fv homebridge.service /etc/systemd/system/
+		systemctl restart cgate.service
 		[ -f homebridge.timer ] && mv -fv homebridge.timer /etc/systemd/system/
-		id -u homebridge &>/dev/null || useradd -M --system homebridge
-		mkdir -pv /var/lib/homebridge
-		chown -R homebridge:homebridge /var/lib/homebridge
-		chmod 777 -R /var/lib/homebridge
-		[ -f config.json ] && mv -fv config.json /var/lib/homebridge/
+		#Add the C-Gate settings to config.json - if they don't already exist:
+		found=$(cat /var/lib/homebridge/config.json | jq ' .platforms | ( map(select(.name == "CBus")))')
+		if [ "$found" == "[]" ];
+		then
+			# NB: jq can't edit in place, so we need to bounce through a .tmp file:
+			cp /var/lib/homebridge/config.json /var/lib/homebridge/config.json.tmp &&
+			cat /var/lib/homebridge/config.json.tmp | jq '.platforms += [{ "platform": "homebridge-cbus.CBus", "name": "CBus", "client_ip_address": "127.0.0.1", "client_controlport": 20023, "client_cbusname": "HOME", "client_network": 254, "client_application": 56, "client_debug": true, "platform_export": "/home/pi/my-platform.json", "accessories": [] }]' > /var/lib/homebridge/config.json &&
+			rm /var/lib/homebridge/config.json.tmp
+			echo 'Added "homebridge-cbus.CBus" to /var/lib/homebridge/config.json OK'
+		else
+			echo 'Skipped: already in config.json'
+		fi
+		#Update the Project name:
+		sed -i -E "s/^(.*)HOME(.*)/\1$filename\2/" /var/lib/homebridge/config.json
 		touch my-platform.json
-		chown -R homebridge:homebridge /home/pi/my-platform.json
 		chmod 777 -R /home/pi/my-platform.json
+		systemctl stop homebridge
+		systemctl disable homebridge.service	#It runs under the control of the timer
 		systemctl daemon-reload
 		systemctl enable homebridge.timer
-		systemctl start homebridge.timer
 	else
+		echo "======================================="
 		echo ""
-		echo ">> No Tags file found. Please upload it to /home/pi/ and re-run Step2"
+		echo 'Copy your tags file (i.e. "<ProjectName>.xml)" to /home/pi/ and then run Step2'
+		echo "(If you don't know how to do this, I use WinSCP)"
 		echo ""
 		exit
 	fi
@@ -137,6 +148,7 @@ copy_groups ()
 	# See "88/256 Colors": https://misc.flogisoft.com/bash/tip_colors_and_formatting
 	GREEN="\033[38;5;10m"
 	YELLOW="\033[38;5;11m"
+	GREY="\033[38;5;60m"
 	RESET="\033[0m"
 	# This matches the format of the DISABLED accessories:
 	matchRegex="^\S+(.*)(,\ \"enabled\":\ false.*)$"
@@ -148,18 +160,32 @@ copy_groups ()
 		then
 			thisGroup=${BASH_REMATCH[1]}
 			echo ""
-			echo ${BASH_REMATCH[1]}
-			#Skip if it's already in the file:
-			if grep -Fq "$thisGroup" /var/lib/homebridge/config.json;
-			then
+			echo $thisGroup
+			
+			#Skip if it's already in the file
+			#Parse the json back to its constituents (for the search)
+			thisType=$( echo "{$thisGroup}" | jq '. | .type ')
+			thisNetwork=$( echo "{$thisGroup}" | jq '. | .network ')
+			thisId=$( echo "{$thisGroup}" | jq '. | .id ')
+			thisName=$( echo "{$thisGroup}" | jq '. | .name ')
+			#Check if we need to specify the network in the search string
+			if [ -z "$thisNetwork" ]; then
+				found=$(cat /var/lib/homebridge/config.json | jq ' .. | objects | select(.accessories) | .accessories | if type == "array" then .[] else . end | select(.type == '"$thisType"' and .network == '"$thisNetwork"' and .id == '"$thisId"' and .name == '"$thisName"')')
+			else
+				found=$(cat /var/lib/homebridge/config.json | jq ' .. | objects | select(.accessories) | .accessories | if type == "array" then .[] else . end | select(.type == '"$thisType"' and .id == '"$thisId"' and .name == '"$thisName"')')
+			fi
+			if [ ! -z "$found" ]; then
 				echo 'Skipped: already in config.json'
+				#
+				# TODO: Give the user the option to change the type
+				#
 				continue
 			fi
 			matchUnknown="\"type\":\ \"unknown\"(.+)"
 			if [[ $thisGroup =~ $matchUnknown ]];
 			then
 				defaultChoice="c"
-				read -p "$(echo -e "[a]dd, [s]kip, "$YELLOW"[C]hange & enable"$RESET", [q]uit? ")" choice
+				read -p "$(echo -e ""$GREY"[a]dd,"$RESET" [s]kip, "$YELLOW"[C]hange & enable"$RESET", [q]uit? ")" choice
 			else
 				defaultChoice="a"
 				read -p "$(echo -e ""$GREEN"[A]dd"$RESET", [s]kip, [C]hange & enable, [q]uit? ")" choice
@@ -178,7 +204,16 @@ copy_groups ()
 			fi
 			case $choice in
 				(a|A)
-					echo "Added"
+					#
+					# TODO: Neaten this. Invalidate A properly where type is Unknown
+					#
+					if [ "$defaultChoice" == "c" ] ;
+					then
+						echo "No you dont"
+						continue
+					else
+						echo "Added"
+					fi
 					;;
 				(s|S)
 					echo "Skipped"
@@ -209,34 +244,27 @@ copy_groups ()
 					break #We're outta here
 					;;
 			esac
-			#Skip if a changed value (e.g. from "Unknown") is already in the file:
-			if grep -Fq "$thisGroup" /var/lib/homebridge/config.json;
+			#Skip if a changed group type (e.g. from "Unknown") is already in the file:
+			if [ "$defaultChoice" == "c" ] ;
 			then
-				echo 'Skipped: already in config.json'
-				continue
-			fi
-			#Capture the line number of the last group:
-			lastLine=$(sed -n -E '/^\s*\{.+\}$/=' /var/lib/homebridge/config.json)
-			if [ ! -z "$lastLine" ];
-			then
-				# Add a trailing comma to what's *currently* the last group:
-				sed -i -E "$lastLine s/^(\s*\{.+\}$)/\1,/"g /var/lib/homebridge/config.json
-				((lastLine+=1)) #Move the index to the line after, where we'll insert a new one
-				sed -i "$lastLine i\        {$thisGroup }" /var/lib/homebridge/config.json
-			else
-				#This might be a brand new file. Let's check:
-				accessoriesCount=$(grep -Fc '"accessories": [ ]' /var/lib/homebridge/config.json)
-				if [[ $accessoriesCount == 2 ]];
-				then
-					#Yes, it's a brand new file. Glue this first group into the first instance of '"accessories": [ ]'
-					sed -i -E "0,/\"accessories\":\ \[\ \]/s/(\"accessories\":\ \[)\ \]/\1\n\        {$thisGroup }\n\      ]/" /var/lib/homebridge/config.json
+				#We can re-used the old parsed values for this fresh query, just updating the type:
+				thisType="\"$replaceValue\""
+				#Check if we need to specify the network in the search string
+				if [ -z "$thisNetwork" ]; then
+					found=$(cat /var/lib/homebridge/config.json | jq ' .. | objects | select(.accessories) | .accessories | if type == "array" then .[] else . end | select(.type == '"$thisType"' and .network == '"$thisNetwork"' and .id == '"$thisId"' and .name == '"$thisName"')')
 				else
-					echo ">> JSON error. config.json has no final assessory without a comma after it"
-					echo ">> Please manually edit config.json and restart"
-					echo ""
-					break
+					found=$(cat /var/lib/homebridge/config.json | jq ' .. | objects | select(.accessories) | .accessories | if type == "array" then .[] else . end | select(.type == '"$thisType"' and .id == '"$thisId"' and .name == '"$thisName"')')
+				fi
+				if [ ! -z "$found" ]; then
+					echo 'Skipped: already in config.json'
+					continue
 				fi
 			fi
+			
+			cp /var/lib/homebridge/config.json /var/lib/homebridge/config.json.tmp &&
+			cat /var/lib/homebridge/config.json.tmp | jq ' .platforms |= ( map(select(.name == "CBus").accessories += [{ '"$thisGroup"' }] ))' > /var/lib/homebridge/config.json &&
+			rm /var/lib/homebridge/config.json.tmp
+			
 		fi
 	done 9</home/pi/my-platform.json
 	echo "Done"
@@ -309,6 +337,7 @@ fi
 case "$1" in
 	("step1")
 		step1
+		step2
 		prompt_for_reboot
 		;;
 	("step2")

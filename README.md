@@ -6,8 +6,7 @@ Based on [the definitive setup documentation](https://onedrive.live.com/?authkey
 
 All you need to get underway is:
 - a Raspberry Pi with microSD card, power supply and box.
-- a HDMI monitor & keyboard (to get the initial config on the Pi).
-- a static IP address on your local network (for the Pi).
+- a wired or wireless network connection
 - A C-Bus network!
 - The "tags" file from your network's C-Gate.
 
@@ -18,6 +17,9 @@ The easy to follow setup process:
 - updates your Pi.
 - downloads this repo and its supporting files, then the setup script (in this repo) takes over and automates all that's possible, including some useful tools and hitherto unseen shortcuts.
 
+## Static IP addressing
+
+Homebridge defaults to DHCP for its IP address. If you want to change to a static IP address, launch the NetworkManager Terminal UI from a terminal window in the browser, or an SSH connection. See ["How To Set A Static IP Address](https://github.com/homebridge/homebridge-raspbian-image/wiki/How-To-Set-A-Static-IP-Address) on the project's Wiki for the details.
 
 ## Issues?
 
