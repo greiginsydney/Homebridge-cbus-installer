@@ -89,7 +89,7 @@ If you're starting from scratch, start here at Step 1.
 
 ## Copy the Tags file
 
-12. Your C-bus network's "Tags file" is a file you'll find where-ever C-Gate is installed. It's essentially a dictionary file, matching the human-readable names you've given the inputs and outputs to the "Group Addresses" that C-Bus uses on the network.
+12. Your C-bus network's "Tags file" is a file you'll find where-ever C-Gate is currently installed. It's essentially a dictionary file, matching the human-readable names you've given the inputs and outputs to the "Group Addresses" that C-Bus uses on the network.
 
 On Windows, the default path for it is `C:\Clipsal\C-Gate2\tag\` and it will be called \<YourNetworkName\>.xml".
   
