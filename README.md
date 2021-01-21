@@ -8,6 +8,7 @@ All you need to get underway is:
 - a Raspberry Pi with microSD card, power supply and box.
 - a wired or wireless network connection
 - A C-Bus network!
+- A Clipsal CNI ethernet interface (5500CN2) or other ethernet interface that connects to the C-Bus network
 - The "tags" file from your network's C-Gate.
 
 [SETUP.md](SETUP.md) takes you through all the steps. 
