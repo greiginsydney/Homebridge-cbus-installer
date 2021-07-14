@@ -110,6 +110,7 @@ step2 ()
 		filename="${filename%.*}"
 		echo ">> Assuming project name = $filename, and setting C-Gate project.start & project.default values accordingly."
 		[ -f *.xml ] && mv *.xml /usr/local/bin/cgate/tag/ # mv xxxxx.xml /usr/local/bin/cgate/tag
+		ln -snfv "/usr/local/bin/cgate/tag/${filename}.xml" "/usr/local/bin/cgate/tag\\$filename.xml"
 		sed -i -E "s/^project.default=(.*)/project.default=$filename/" /usr/local/bin/cgate/config/C-GateConfig.txt
 		sed -i -E "s/^project.start=(.*)/project.start=$filename/" /usr/local/bin/cgate/config/C-GateConfig.txt
 		systemctl restart cgate.service
