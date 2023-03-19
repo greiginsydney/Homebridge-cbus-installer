@@ -39,10 +39,6 @@ step1 ()
 	apt-get install jq
 	echo "======================================="
 	echo ""
-	echo ">> download homebridge-cbus:"
-	npm install -g homebridge-cbus
-	echo "======================================="
-	echo ""
 	echo ">> download and setup java:"
 	apt-get install openjdk-8-jre-headless -y
 	echo "======================================="
