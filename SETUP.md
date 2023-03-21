@@ -136,6 +136,17 @@ sudo apt-get update && sudo apt-get upgrade -y
 
 Your SSH session will end here. Wait for the Pi to reboot, sign back in again and continue.
 
+Manually install Homebridge-CBus plugin
+```txt
+sudo hb-shell
+```
+```txt
+sudo hb-service add homebridge-cbus
+```
+```txt
+exit
+```
+
 22. We need to install Subversion so we can download *just* the needed bits of the repo from GitHub:
 ```txt
 sudo apt-get install subversion -y
