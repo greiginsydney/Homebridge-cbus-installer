@@ -35,6 +35,13 @@ step1 ()
 {
 	echo "======================================="
 	echo ""
+	echo ">> manually extract from the repo & tidy up"
+ 	[ -f "/home/${SUDO_USER}/Homebridge-cbus-installer/code/cgate.service" ] && mv -fv /home/${SUDO_USER}/Homebridge-cbus-installer/code/cgate.service /home/${SUDO_USER}
+	[ -f "/home/${SUDO_USER}/Homebridge-cbus-installer/code/homebridge.timer" ] && mv -fv /home/${SUDO_USER}/Homebridge-cbus-installer/code/homebridge.timer /home/${SUDO_USER}
+	rm -rf /home/${SUDO_USER}/Homebridge-cbus-installer
+ 	
+  	echo "======================================="
+	echo ""
 	echo ">> download jq:"
 	apt-get install jq
 	echo "======================================="
