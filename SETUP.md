@@ -155,7 +155,7 @@ git clone --depth=1 https://github.com/greiginsydney/Homebridge-cbus-installer
 24. Now we need to move the setup.sh script file into its final location:
 
 ```txt
-cp -fv Homebridge-cbus-installer/code/setup.sh ~
+mv -fv Homebridge-cbus-installer/code/setup.sh ~
 ``` 
 
 25. All the remaining work is done by the above script, but it needs to be made executable first:
