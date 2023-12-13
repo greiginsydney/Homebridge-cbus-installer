@@ -66,9 +66,10 @@ step1 ()
 	
 	JVERSION=$(ls -d jdk* | head -n1) # Today that's "jdk1.8.0_381"
 
-	update-alternatives --install --force /usr/bin/java  java  "/usr/java/${JVERSION[0]}/bin/java" 1000
-	update-alternatives --install --force /usr/bin/javac javac "/usr/java/${JVERSION[0]}/bin/javac" 1000
+	update-alternatives --install /usr/bin/java  java  "/usr/java/${JVERSION[0]}/bin/java" 1000
+	update-alternatives --install /usr/bin/javac javac "/usr/java/${JVERSION[0]}/bin/javac" 1000
 
+ 	echo ""
 	java -version
  	echo ""
 	javac -version
