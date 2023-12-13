@@ -11,11 +11,46 @@
 - Some software that will let you transfer the tags file to the Pi. I use [WinSCP](https://winscp.net/eng/index.php), but there are plenty of alternatives.
 - Software that will let you connect via SSH to the Pi. (Windows 10 now does this natively.)
 
+- Java 8. This can no longer be done for you programmatically, as it now requires an authentication step (thank you Oracle).
+
+### Java 8
+
+1. Browse to [Java SE 8 Archive Downloads (JDK 8u211 and later)](https://www.oracle.com/java/technologies/javase/javase8u211-later-archive-downloads.html).
+2. Click to download the latest version of the "Linux ARM32 Hard Float ABI".
+3. Jump through the hoops to create a login & authenticate yourself.
+4. Obtain the download. It should be called something like `jdk-8u381-linux-arm32-vfp-hflt.tar.gz`. Put it somewhere that you will be able to transfer it to the Pi. (Target dir = `/home/pi/`).
+
+> It doesn't NEED to be this version. The script will attempt to install the first file it finds that matches "jdk*.gz" in /home/pi.
+
+[Reference](https://forums.raspberrypi.com/viewtopic.php?t=231460) - and thank you Daryl.
+
+## Start here
 
 If you're starting from scratch, start here at Step 1.
 
+1. Prepare the memory card with the [32-bit Homebridge Raspbian](https://www.raspberrypi.org/software/operating-systems/) image.
 
-1. Prepare the memory card with the [Homebridge Raspbian](https://github.com/homebridge/homebridge-raspbian-image) image.
+> The ["Raspberry Pi Imager"](https://www.raspberrypi.org/software/) app can download and write the image to a memory card for you quickly and easily.
+
+<p align="center">
+<img src="https://github.com/greiginsydney/Homebridge-cbus-installer/assets/11004787/9980e248-777e-489d-b656-0d523adc8d0f" width="50%">
+</p>
+<br>
+
+<p align="center">
+<img src="https://github.com/greiginsydney/Homebridge-cbus-installer/assets/11004787/7551acb3-1f0b-463c-95fc-8b6c6334bf6f" width="50%">
+</p>
+<br>
+
+ <p align="center">
+<img src="https://github.com/greiginsydney/Homebridge-cbus-installer/assets/11004787/9cdfd375-8e83-4968-ac0e-b31254f9dc53" width="50%">
+</p>
+<br>
+
+<p align="center">
+<img src="https://github.com/greiginsydney/Homebridge-cbus-installer/assets/11004787/09681b4b-6086-4be5-a1dd-4ef1cb815a13" width="50%">
+</p>
+ 
 2. If you're building a Pi with a wired network connection, make sure it's connected before proceeding.
 
 > You don't need to connect a monitor or keyboard, although if you have one, a monitor will display some extra info that might help if you're having problems connecting to the Pi in the later steps.
@@ -101,6 +136,13 @@ On Windows, the default path for it is `C:\Clipsal\C-Gate2\tag\` and it will be 
   <img src="https://user-images.githubusercontent.com/11004787/89698371-2c374c80-d964-11ea-94f2-2deb6bc32467.png" width="60%">
 </p>
 
+## Copy Java
+
+You downloaded Java 8 in the pre-req's earlier. Now's the time to copy it across to the Pi (if you haven't already).
+ 
+If it's not found in `/home/pi/` when the script runs it will abort.
+
+
 ## Remote config via SSH
 
 14. SSH to the Pi using your preferred client. If you're using Windows 10 you can just do this from a PowerShell window:
@@ -143,7 +185,7 @@ sudo hb-service add homebridge-cbus
 exit
 ```
 
-23. This downloads the repo, dropping the structure into a subdirecory called `Homebridge-cbus-installer`:
+23. This downloads the repo, dropping the structure into a subdirectory called `Homebridge-cbus-installer`:
 ```txt
 cd ~
 sudo rm -rf Homebridge-cbus-installer
