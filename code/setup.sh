@@ -62,7 +62,7 @@ step1 ()
 	rm -rf /usr/java
 	mkdir /usr/java
 	cd /usr/java
-	tar -xfv "${archive[0]}"
+	tar -xf "${archive[0]}"
 	
 	JVERSION=$(ls -d jdk* | head -n1) # Today that's "jdk1.8.0_381"
 
