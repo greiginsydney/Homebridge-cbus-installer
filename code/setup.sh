@@ -46,8 +46,32 @@ step1 ()
 	apt-get install jq
 	echo "======================================="
 	echo ""
-	echo ">> download and setup java:"
-	apt-get install openjdk-8-jre-headless -y
+	echo ">> setup java8:"
+	archive=$(ls /home/${SUDO_USER}/jdk*.gz | head -n1)
+	if [ ! $archive ];
+	then
+		echo ""
+		echo "A jdk archive was not found in the user's home directory."
+		echo "Review the install process (SETUP.md) and restart."
+		echo ""
+		exit
+	else
+		echo "Found ${archive[0]}"
+	fi;
+
+	rm -rf /usr/java
+	mkdir /usr/java
+	cd /usr/java
+	tar -xfv "${archive[0]}"
+	
+	JVERSION=$(ls -d jdk* | head -n1) # Today that's "jdk1.8.0_381"
+
+	sudo update-alternatives --install --force /usr/bin/java  java  /usr/java/${JVERSION[0]}/bin/java 1000
+	sudo update-alternatives --install --force /usr/bin/javac javac /usr/java/${JVERSION[0]}/bin/javac 1000
+
+	java -version
+ 	echo ""
+	javac -version
 	echo "======================================="
 	echo ""
 	echo ">> download and setup c-gate:"
