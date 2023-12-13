@@ -11,11 +11,31 @@
 - Some software that will let you transfer the tags file to the Pi. I use [WinSCP](https://winscp.net/eng/index.php), but there are plenty of alternatives.
 - Software that will let you connect via SSH to the Pi. (Windows 10 now does this natively.)
 
-
 If you're starting from scratch, start here at Step 1.
 
+1 Prepare the memory card with the [32-bit Homebridge Raspbian](https://www.raspberrypi.org/software/operating-systems/) image.
 
-1. Prepare the memory card with the [Homebridge Raspbian](https://github.com/homebridge/homebridge-raspbian-image) image.
+> The ["Raspberry Pi Imager"](https://www.raspberrypi.org/software/) app can download and write the image to a memory card for you quickly and easily.
+
+<p align="center">
+<img src="https://github.com/greiginsydney/Homebridge-cbus-installer/assets/11004787/9980e248-777e-489d-b656-0d523adc8d0f" width="50%">
+</p>
+<br>
+
+<p align="center">
+<img src="https://github.com/greiginsydney/Homebridge-cbus-installer/assets/11004787/7551acb3-1f0b-463c-95fc-8b6c6334bf6f" width="50%">
+</p>
+<br>
+
+ <p align="center">
+<img src="https://github.com/greiginsydney/Homebridge-cbus-installer/assets/11004787/9cdfd375-8e83-4968-ac0e-b31254f9dc53" width="50%">
+</p>
+<br>
+
+<p align="center">
+<img src="https://github.com/greiginsydney/Homebridge-cbus-installer/assets/11004787/09681b4b-6086-4be5-a1dd-4ef1cb815a13" width="50%">
+</p>
+ 
 2. If you're building a Pi with a wired network connection, make sure it's connected before proceeding.
 
 > You don't need to connect a monitor or keyboard, although if you have one, a monitor will display some extra info that might help if you're having problems connecting to the Pi in the later steps.
