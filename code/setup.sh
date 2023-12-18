@@ -149,7 +149,16 @@ step2 ()
 		sed -i -E "s/^project.default=(.*)/project.default=$filename/" /usr/local/bin/cgate/config/C-GateConfig.txt
 		sed -i -E "s/^project.start=(.*)/project.start=$filename/" /usr/local/bin/cgate/config/C-GateConfig.txt
 		systemctl restart cgate.service
-		[ -f homebridge.timer ] && mv -fv homebridge.timer /etc/systemd/system/
+
+  		echo ">> homebridge timer:"
+		if [ -f /home/${SUDO_USER}/homebridge.timer ];
+		then
+			echo ">> Found homebridge.timer file in /home/${SUDO_USER}. Moving to /etc/systemd/system/"
+			mv -fv /home/${SUDO_USER}/homebridge.timer /etc/systemd/system/
+		else
+			echo ">> Didn't find homebridge.timer file in /home/${SUDO_USER}. I hope it's already there"
+		fi
+
 		#Add the C-Gate settings to config.json - if they don't already exist:
 		found=$(cat /var/lib/homebridge/config.json | jq ' .platforms | ( map(select(.name == "CBus")))')
 		if [ "$found" == "[]" ];
