@@ -75,9 +75,10 @@ step1 ()
 	javac -version
 	echo "======================================="
 	echo ""
-	echo ">> download and setup c-gate:"
+	echo ">> c-gate:"
 	if [ ! -d /usr/local/bin/cgate ];
 	then
+ 		echo ">> download and setup c-gate:"
 		wget https://updates.clipsal.com/clipsalsoftwaredownload/mainsite/cis/technical/cgate/cgate-2.11.4_3251.zip
 		unzip cgate-2.11.4_3251.zip
 		mv cgate /usr/local/bin
@@ -87,7 +88,13 @@ step1 ()
 	fi
 	echo ""
 	echo ">> Set CGate to start as a service using systemd"
-	[ -f cgate.service ] && mv -fv cgate.service /etc/systemd/system/
+	if [ -f /home/${SUDO_USER}/cgate.service ];
+	then
+		echo ">> Found cgate.service file in /home/${SUDO_USER}. Moving to /etc/systemd/system/"
+		mv -fv /home/${SUDO_USER}/cgate.service /etc/systemd/system/
+	else
+		echo ">> Didn't find cgate.service file in /home/${SUDO_USER}. I hope it's already there"
+	fi
 	systemctl enable cgate.service
 	systemctl start cgate.service
 	echo ""
