@@ -93,7 +93,7 @@ step1 ()
 		echo ">> Found cgate.service file in /home/${SUDO_USER}. Moving to /etc/systemd/system/"
 		mv -fv /home/${SUDO_USER}/cgate.service /etc/systemd/system/
 	else
-		echo ">> Didn't find cgate.service file in /home/${SUDO_USER}. I hope it's already there"
+		echo ">> Didn't find cgate.service file in /home/${SUDO_USER}. I hope it's already been moved to /etc/systemd/system/"
 	fi
 	systemctl enable cgate.service
 	systemctl start cgate.service
@@ -157,7 +157,7 @@ step2 ()
 			echo ">> Found homebridge.timer file in /home/${SUDO_USER}. Moving to /etc/systemd/system/"
 			mv -fv /home/${SUDO_USER}/homebridge.timer /etc/systemd/system/
 		else
-			echo ">> Didn't find homebridge.timer file in /home/${SUDO_USER}. I hope it's already there"
+			echo ">> Didn't find homebridge.timer file in /home/${SUDO_USER}. I hope it's already been moved to /etc/systemd/system/"
 		fi
 
 		#Add the C-Gate settings to config.json - if they don't already exist:
