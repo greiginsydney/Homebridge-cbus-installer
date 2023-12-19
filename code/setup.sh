@@ -166,7 +166,7 @@ step2 ()
 		then
 			# NB: jq can't edit in place, so we need to bounce through a .tmp file:
 			cp /var/lib/homebridge/config.json /var/lib/homebridge/config.json.tmp &&
-			cat /var/lib/homebridge/config.json.tmp | jq '.platforms += [{ "platform": "homebridge-cbus.CBus", "name": "CBus", "client_ip_address": "127.0.0.1", "client_controlport": 20023, "client_cbusname": "HOME", "client_network": 254, "client_application": 56, "client_debug": true, "platform_export": "/home/${SUDO_USER}/my-platform.json", "accessories": [] }]' > /var/lib/homebridge/config.json &&
+			cat /var/lib/homebridge/config.json.tmp | jq -r --arg SUDOUSER "${SUDO_USER}" '.platforms += [{ "platform": "homebridge-cbus.CBus", "name": "CBus", "client_ip_address": "127.0.0.1", "client_controlport": 20023, "client_cbusname": "HOME", "client_network": 254, "client_application": 56, "client_debug": true, "platform_export": "/home/\($SUDOUSER)/my-platform.json", "accessories": [] }]' > /var/lib/homebridge/config.json &&
 			rm /var/lib/homebridge/config.json.tmp
 			echo 'Added "homebridge-cbus.CBus" to /var/lib/homebridge/config.json OK'
 		else
