@@ -75,9 +75,10 @@ step1 ()
 	javac -version
 	echo "======================================="
 	echo ""
-	echo ">> download and setup c-gate:"
+	echo ">> c-gate:"
 	if [ ! -d /usr/local/bin/cgate ];
 	then
+ 		echo ">> download and setup c-gate:"
 		wget https://updates.clipsal.com/clipsalsoftwaredownload/mainsite/cis/technical/cgate/cgate-2.11.4_3251.zip
 		unzip cgate-2.11.4_3251.zip
 		mv cgate /usr/local/bin
@@ -87,7 +88,13 @@ step1 ()
 	fi
 	echo ""
 	echo ">> Set CGate to start as a service using systemd"
-	[ -f cgate.service ] && mv -fv cgate.service /etc/systemd/system/
+	if [ -f /home/${SUDO_USER}/cgate.service ];
+	then
+		echo ">> Found cgate.service file in /home/${SUDO_USER}. Moving to /etc/systemd/system/"
+		mv -fv /home/${SUDO_USER}/cgate.service /etc/systemd/system/
+	else
+		echo ">> Didn't find cgate.service file in /home/${SUDO_USER}. I hope it's already been moved to /etc/systemd/system/"
+	fi
 	systemctl enable cgate.service
 	systemctl start cgate.service
 	echo ""
@@ -114,16 +121,17 @@ step1 ()
 			break
 		fi
 	done
+ 	echo ">> end of step 1"
 }
 
 step2 ()
 {
 	# Step2 automatically follows Step1, but you can also manually jump here from the cmd line
-	
+	echo ">> start of step 2"
 	#If you run Step2 with the -H switch (i.e. as root) it sets the path of /home/pi, otherwise follows the actual users $HOME env dir
 	if [ "${HOME}" == "/root" ];
 	then
-		cd "/home/pi/"
+		cd "/home/${SUDO_USER}/"
 	fi
 	if [ ! -f /usr/local/bin/cgate/config/C-GateConfig.txt ];
 	then
@@ -142,14 +150,23 @@ step2 ()
 		sed -i -E "s/^project.default=(.*)/project.default=$filename/" /usr/local/bin/cgate/config/C-GateConfig.txt
 		sed -i -E "s/^project.start=(.*)/project.start=$filename/" /usr/local/bin/cgate/config/C-GateConfig.txt
 		systemctl restart cgate.service
-		[ -f homebridge.timer ] && mv -fv homebridge.timer /etc/systemd/system/
+
+  		echo ">> homebridge timer:"
+		if [ -f /home/${SUDO_USER}/homebridge.timer ];
+		then
+			echo ">> Found homebridge.timer file in /home/${SUDO_USER}. Moving to /etc/systemd/system/"
+			mv -fv /home/${SUDO_USER}/homebridge.timer /etc/systemd/system/
+		else
+			echo ">> Didn't find homebridge.timer file in /home/${SUDO_USER}. I hope it's already been moved to /etc/systemd/system/"
+		fi
+
 		#Add the C-Gate settings to config.json - if they don't already exist:
 		found=$(cat /var/lib/homebridge/config.json | jq ' .platforms | ( map(select(.name == "CBus")))')
 		if [ "$found" == "[]" ];
 		then
 			# NB: jq can't edit in place, so we need to bounce through a .tmp file:
 			cp /var/lib/homebridge/config.json /var/lib/homebridge/config.json.tmp &&
-			cat /var/lib/homebridge/config.json.tmp | jq '.platforms += [{ "platform": "homebridge-cbus.CBus", "name": "CBus", "client_ip_address": "127.0.0.1", "client_controlport": 20023, "client_cbusname": "HOME", "client_network": 254, "client_application": 56, "client_debug": true, "platform_export": "/home/pi/my-platform.json", "accessories": [] }]' > /var/lib/homebridge/config.json &&
+			cat /var/lib/homebridge/config.json.tmp | jq -r --arg SUDOUSER "${SUDO_USER}" '.platforms += [{ "platform": "homebridge-cbus.CBus", "name": "CBus", "client_ip_address": "127.0.0.1", "client_controlport": 20023, "client_cbusname": "HOME", "client_network": 254, "client_application": 56, "client_debug": true, "platform_export": "/home/\($SUDOUSER)/my-platform.json", "accessories": [] }]' > /var/lib/homebridge/config.json &&
 			rm /var/lib/homebridge/config.json.tmp
 			echo 'Added "homebridge-cbus.CBus" to /var/lib/homebridge/config.json OK'
 		else
@@ -158,7 +175,7 @@ step2 ()
 		#Update the Project name:
 		sed -i -E "s/^(.*)HOME(.*)/\1$filename\2/" /var/lib/homebridge/config.json
 		touch my-platform.json
-		chmod 777 -R /home/pi/my-platform.json
+		chmod 777 -R /home/${SUDO_USER}/my-platform.json
 		systemctl stop homebridge
 		systemctl disable homebridge.service	#It runs under the control of the timer
 		systemctl daemon-reload
@@ -166,7 +183,7 @@ step2 ()
 	else
 		echo "======================================="
 		echo ""
-		echo 'Copy your tags file (i.e. "<ProjectName>.xml)" to /home/pi/ and then run Step2'
+		echo "Copy your tags file (i.e. '<ProjectName>.xml)' to /home/${SUDO_USER}/ and then run Step2"
 		echo "(If you don't know how to do this, I use WinSCP)"
 		echo ""
 		exit
@@ -299,7 +316,7 @@ copy_groups ()
 			rm /var/lib/homebridge/config.json.tmp
 			
 		fi
-	done 9</home/pi/my-platform.json
+	done 9</home/${SUDO_USER}/my-platform.json
 	echo "Done"
 	matchRegex="^\S*\"pin\":\ \"(.+)\"$"
 	while read line; do
