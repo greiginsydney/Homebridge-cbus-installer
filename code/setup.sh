@@ -121,12 +121,13 @@ step1 ()
 			break
 		fi
 	done
+ 	echo ">> end of step 1"
 }
 
 step2 ()
 {
 	# Step2 automatically follows Step1, but you can also manually jump here from the cmd line
-	
+	echo ">> start of step 2"
 	#If you run Step2 with the -H switch (i.e. as root) it sets the path of /home/pi, otherwise follows the actual users $HOME env dir
 	if [ "${HOME}" == "/root" ];
 	then
